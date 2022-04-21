@@ -29,7 +29,7 @@ class _MainPageState extends State<MainPage> {
       body: PageView(
         controller: _pc,
         physics: const NeverScrollableScrollPhysics(),
-        children: const [
+        children: [
           HomePage(),
           ProfilePage(),
         ],
@@ -75,12 +75,12 @@ class _MainPageState extends State<MainPage> {
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Icon(
-                          Icons.home,
-                          // color: MrtColors.mrtBlueColor,
+                      children: [
+                        Image.asset(
+                          "assets/img/ic_home.png",
+                          height: 20,
                         ),
-                        Text(
+                        const Text(
                           'Home',
                           style: TextStyle(
                             // color: MrtColors.mrtBlueColor,
@@ -98,15 +98,12 @@ class _MainPageState extends State<MainPage> {
                   onTap: null,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Opacity(
-                        opacity: 0,
-                        child: Icon(
-                          Icons.home,
-                          // color: MrtColors.mrtBlueColor,
-                        ),
+                    children: [
+                      Image.asset(
+                        "assets/img/ic_discuss.png",
+                        height: 20,
                       ),
-                      Text(
+                      const Text(
                         'Diskusi',
                         style: TextStyle(
                           // color: MrtColors.mrtBlueColor,

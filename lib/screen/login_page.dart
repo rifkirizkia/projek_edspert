@@ -1,8 +1,23 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:projek_edspert/controller/AuthProviderController.dart';
 import 'package:projek_edspert/screen/register_page.dart';
+import 'package:provider/provider.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class LoginPage extends StatefulWidget {
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  late AuthProviderController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = Provider.of<AuthProviderController>(context, listen: false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +54,7 @@ class LoginPage extends StatelessWidget {
               ),
               const Spacer(),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 50),
+                padding: const EdgeInsets.symmetric(horizontal: 40),
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       elevation: 0,
@@ -52,12 +67,8 @@ class LoginPage extends StatelessWidget {
                               style: BorderStyle.solid,
                               width: 1)),
                     ),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: ((context) => const RegisterPage()),
-                        ),
-                      );
+                    onPressed: () async {
+                      controller.signIn(context);
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -80,7 +91,7 @@ class LoginPage extends StatelessWidget {
                 height: 20,
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 50),
+                padding: const EdgeInsets.symmetric(horizontal: 40),
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       elevation: 0,
