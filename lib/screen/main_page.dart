@@ -21,7 +21,7 @@ class _MainPageState extends State<MainPage> {
       floatingActionButton: FloatingActionButton(onPressed: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => const DiscussionPage(),
+            builder: (context) => DiscussionPage(),
           ),
         );
       }),
@@ -29,7 +29,7 @@ class _MainPageState extends State<MainPage> {
       body: PageView(
         controller: _pc,
         physics: const NeverScrollableScrollPhysics(),
-        children: [
+        children: const [
           HomePage(),
           ProfilePage(),
         ],
@@ -70,7 +70,7 @@ class _MainPageState extends State<MainPage> {
                       _pc.animateToPage(
                         0,
                         curve: Curves.easeInOut,
-                        duration: Duration(microseconds: 1),
+                        duration: const Duration(microseconds: 1),
                       );
                     },
                     child: Column(
@@ -125,7 +125,7 @@ class _MainPageState extends State<MainPage> {
                       _pc.animateToPage(
                         1,
                         curve: Curves.easeInOut,
-                        duration: Duration(microseconds: 1),
+                        duration: const Duration(microseconds: 1),
                       );
                     },
                     child: Column(
@@ -136,7 +136,7 @@ class _MainPageState extends State<MainPage> {
                           // color: MrtColors.mrtBlueColor,
                         ),
                         Text(
-                          'My Menu',
+                          'Profile',
                           style: TextStyle(
                               // color: MrtColors.mrtBlueColor,
                               fontSize: 13),

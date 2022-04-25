@@ -4,8 +4,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:projek_edspert/helpers/preference_helper.dart';
+import 'package:projek_edspert/helpers/user_email.dart';
 import 'package:projek_edspert/models/data_by_user_email.dart';
 import 'package:projek_edspert/models/matapelajaran_list.dart';
+import 'package:projek_edspert/models/network_response.dart';
 import 'package:projek_edspert/repository/auth_api.dart';
 import 'package:projek_edspert/repository/latihan_soal_api.dart';
 
@@ -36,11 +39,10 @@ class AuthProviderController extends ChangeNotifier {
     Timer(const Duration(seconds: 2), () async {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        final response =
-            await AuthApi().getUserByEmail("alitopan@widyaedu.com");
-        if (response != null) {
+        final response = await AuthApi().getUserByEmail();
+        if (response.status == Status.success) {
           print(response);
-          final userData = DataUserByEmail.fromJson(response);
+          final userData = DataUserByEmail.fromJson(response.data!);
           if (userData.status == 1) {
             Navigator.of(context).push(
               MaterialPageRoute(
@@ -75,13 +77,11 @@ class AuthProviderController extends ChangeNotifier {
     await signInWithGoogle();
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      print(user.email);
-      final response = await AuthApi().getUserByEmail("alitopan@widyaedu.com");
-      print(response);
-      if (response != null) {
-        print(response);
-        final userData = DataUserByEmail.fromJson(response);
-        if (userData.status == 1) {
+      final dataUser = await AuthApi().getUserByEmail();
+      if (dataUser.status == Status.success) {
+        final data = DataUserByEmail.fromJson(dataUser.data!);
+        if (data.status == 1) {
+          await PreferenceHelper().setUserData(data);
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: ((context) => MainPage()),

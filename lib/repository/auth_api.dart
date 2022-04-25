@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:projek_edspert/helpers/user_email.dart';
 import '../constant/api_url.dart';
+import '../models/network_response.dart';
 
 class AuthApi {
   Dio apiNormal() {
@@ -23,50 +25,51 @@ class AuthApi {
   }
 
   //agar bisa di akses beberapa kali tambahkan endpoint
-  _getRequest({required String endpoint, param}) async {
+  Future<NetworkResponse> _getRequest({required String endpoint, param}) async {
     try {
       final dio = apiNormal();
       final res = await dio.get(endpoint, queryParameters: param);
-      return res.data;
+      return NetworkResponse.success(res.data);
     } on DioError catch (e) {
       if (e.type == DioErrorType.connectTimeout) {
-        print(e);
-        print("timeout");
+        return NetworkResponse.error(data: null, message: "request timeout");
       }
+      return NetworkResponse.error(data: null, message: "request error dio");
     } catch (e) {
-      print(e);
-      print("eror");
+      return NetworkResponse.error(data: null, message: "other error");
     }
   }
 
-  _postRequest({required String endpoint, body}) async {
+  Future<NetworkResponse> _postRequest({required String endpoint, body}) async {
     try {
       final dio = apiNormal();
       final res = await dio.post(endpoint, data: body);
-      return res.data;
+      return NetworkResponse.success(res.data);
     } on DioError catch (e) {
-      if (e.type == DioErrorType.connectTimeout) {
-        print("timeout");
+      if (e.type == DioErrorType.sendTimeout) {
+        return NetworkResponse.error(data: null, message: "request timeout");
       }
+      return NetworkResponse.error(data: null, message: "request error dio");
     } catch (e) {
-      print("eror");
+      return NetworkResponse.error(data: null, message: "other error");
     }
   }
 
-  getUserByEmail(email) async {
+  getUserByEmail() async {
     print(ApiUrl.users);
-    final result =
-        await _getRequest(endpoint: ApiUrl.users, param: {"email": email});
+    final result = await _getRequest(
+        endpoint: ApiUrl.users, param: {"email": UserEmail.getUserEmail()});
     print(print);
     return result;
   }
 
-  Future<Map<String, dynamic>?> postRegisterUser(body) async {
-    final result = await _postRequest(endpoint: ApiUrl.users, body: body);
+  Future<NetworkResponse> postRegisterUser(body) async {
+    final result =
+        await _postRequest(endpoint: ApiUrl.userRegister, body: body);
     return result;
   }
 
-  Future<Map<String, dynamic>?> getLatihanSoal(email) async {
+  Future<NetworkResponse> getLatihanSoal(email) async {
     final result =
         await _getRequest(endpoint: ApiUrl.users, param: {"email": email});
     return result;
