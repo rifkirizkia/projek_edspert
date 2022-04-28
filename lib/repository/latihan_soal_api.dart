@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:projek_edspert/helpers/user_email.dart';
 
 import '../constant/api_url.dart';
 
@@ -45,7 +46,7 @@ class LatihanSoalApi {
       endpoint: ApiUrl.latihanMataPelajaran,
       param: {
         "major_name": major,
-        "user_email": email,
+        "user_email": UserEmail.getUserEmail(),
       },
     );
     return result;
@@ -64,7 +65,7 @@ class LatihanSoalApi {
       endpoint: ApiUrl.latihanMateri,
       param: {
         "course_id": materi,
-        "user_email": email,
+        "user_email": UserEmail.getUserEmail(),
       },
     );
     return result;
@@ -73,7 +74,7 @@ class LatihanSoalApi {
   Future<Map<String, dynamic>?> getSubMateri(email, courseContentId) async {
     final result = await _getRequest(endpoint: ApiUrl.latihanSubMateri, param: {
       "course_content_id": courseContentId,
-      "user_email": email,
+      "user_email": UserEmail.getUserEmail(),
     });
     return result;
   }
@@ -81,29 +82,38 @@ class LatihanSoalApi {
   Future<Map<String, dynamic>?> getPaketSoal(email, course_id) async {
     final result = await _getRequest(endpoint: ApiUrl.latihanPaketSoal, param: {
       "course_id": course_id,
-      "user_email": email,
+      "user_email": UserEmail.getUserEmail(),
     });
     return result;
   }
 
   Future<Map<String, dynamic>?> getSkor(email) async {
     final result = await _getRequest(
-        endpoint: ApiUrl.latihanScore, param: {"email": email});
+        endpoint: ApiUrl.latihanScore,
+        param: {"email": UserEmail.getUserEmail()});
     return result;
   }
 
   Future<Map<String, dynamic>?> postMulaiKerjakan(email, exerciseId) async {
     final result = await _postRequest(endpoint: ApiUrl.latihanKerjakan, body: {
       "exercise_id": exerciseId,
-      "user_email": email,
+      "user_email": UserEmail.getUserEmail(),
     });
     return result;
   }
 
-  Future<Map<String, dynamic>?> postInputJawaban(body) async {
+  Future<Map<String, dynamic>?> postInputJawaban(payload) async {
     final result = await _postRequest(
       endpoint: ApiUrl.latihanSubmit,
-      body: body,
+      body: payload,
+    );
+    return result;
+  }
+
+  Future<Map<String, dynamic>?> getResult(id) async {
+    final result = await _getRequest(
+      endpoint: ApiUrl.latihanScore,
+      param: {"exercise_id": id, "user_email": UserEmail.getUserEmail()},
     );
     return result;
   }

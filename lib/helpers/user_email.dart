@@ -11,6 +11,11 @@ class UserEmail {
     return user!.displayName;
   }
 
+  // static String? getUserSchool() {
+  //   final user = FirebaseAuth.instance.currentUser;
+  //   return user!.displayName;
+  // }
+
   static String? getUserPhotoUrl() {
     final user = FirebaseAuth.instance.currentUser;
     return user!.photoURL;

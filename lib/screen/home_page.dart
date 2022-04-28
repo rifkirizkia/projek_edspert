@@ -6,6 +6,7 @@ import 'package:projek_edspert/models/matapelajaran_list.dart';
 import 'package:projek_edspert/screen/mapel_page.dart';
 import 'package:projek_edspert/screen/paket_soal.dart';
 
+import '../helpers/user_email.dart';
 import '../models/banner_list.dart';
 import '../repository/latihan_soal_api.dart';
 
@@ -83,6 +84,8 @@ class _HomePageState extends State<HomePage> {
       }
     });
   }
+
+  final userName = UserEmail.getUserDisplayName()!;
 
   @override
   void initState() {
@@ -265,7 +268,7 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Hi, Nama User",
+                  "Hi, $userName",
                   style: GoogleFonts.poppins()
                       .copyWith(fontSize: 12, fontWeight: FontWeight.w700),
                 ),

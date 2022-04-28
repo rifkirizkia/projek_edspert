@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:projek_edspert/helpers/user_email.dart';
 import 'package:projek_edspert/screen/result_page.dart';
 
 import '../models/kerjakan_latihan_soal.dart';
@@ -22,7 +23,7 @@ class _KerjakanLatihanSoalPageState extends State<KerjakanLatihanSoalPage>
   KerjakanLatihanSoal? soal;
   getSoalLatihan(id) async {
     final response =
-        await LatihanSoalApi().postMulaiKerjakan("alitopan@widyaedu.com", id);
+        await LatihanSoalApi().postMulaiKerjakan(UserEmail.getUserEmail(), id);
     print(response);
     if (response != null) {
       soal = KerjakanLatihanSoal.fromJson(response);
@@ -55,10 +56,96 @@ class _KerjakanLatihanSoalPageState extends State<KerjakanLatihanSoalPage>
       appBar: AppBar(
         title: const Text("Latihan Soal"),
       ),
+      bottomNavigationBar: Container(
+          margin: const EdgeInsets.only(bottom: 20, right: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      primary: const Color(0xff3A7FD5),
+                      fixedSize: const Size(135, 33),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10))),
+                  onPressed: () async {
+                    if (soal!.data!.length - 1 == _controller.index) {
+                      final resultU = await showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) {
+                            return const BottomSheetConfirmation();
+                          });
+                      print(resultU);
+                      if (resultU == true) {
+                        print('Kirim ke backend');
+                        List<String> answer = [];
+                        List<String> questionId = [];
+                        soal!.data!.forEach((element) {
+                          questionId.add(element.bankQuestionId!);
+                          answer.add(element.studentAnswer!);
+                        });
+
+                        final payload = {
+                          "user_email": UserEmail.getUserEmail(),
+                          "exercise_id": widget.id,
+                          "bank_question_id": questionId,
+                          "student_answer": answer
+                        };
+
+                        print(payload);
+
+                        final result =
+                            await LatihanSoalApi().postInputJawaban(payload);
+                        if (result != null) {
+                          final data = SimpleResponse.fromJson(result);
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (BuildContext context) => ResultPage(
+                                    exerciseId: widget.id,
+                                  )));
+                          // if (data.status == 1) {
+                          //   isLoading = false;
+                          //   setState(() {});
+                          //   Navigator.of(context).pop();
+                          //   // Navigator.of(context).pop();
+                          // }
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content:
+                                      Text('Submit Gagal. Silahkan Ulangi')));
+                        }
+                      }
+                      // isLoading = true;
+                      // setState(() {});
+                      // Payload
+                      final firebaseEmail =
+                          FirebaseAuth.instance.currentUser!.email;
+                      String? email = UserEmail.getUserEmail();
+                      String exerciseId = widget.id;
+                      List<String> answer = [];
+                      List<String> idSoal = [];
+
+                      for (var element in soal!.data!) {
+                        answer.add(element.studentAnswer ?? "X");
+                        idSoal.add(element.bankQuestionId!);
+                      }
+                    } else {
+                      _controller.animateTo(_controller.index + 1);
+                    }
+                  },
+                  child: Text(
+                    soal!.data!.length - 1 == _controller.index
+                        ? "Kumpulin"
+                        : "Selanjutnya",
+                    style: const TextStyle(fontSize: 12),
+                  )),
+            ],
+          )),
       body: ModalProgressHUD(
         inAsyncCall: isLoading,
         child: Container(
-          child: soal == null
+          child: _controller == null
               ? const Center(child: CircularProgressIndicator())
               : Column(
                   children: [
@@ -73,119 +160,85 @@ class _KerjakanLatihanSoalPageState extends State<KerjakanLatihanSoalPage>
                       ),
                     ),
                     Expanded(
-                      child: TabBarView(
-                        controller: _controller,
-                        children: List.generate(
-                          soal!.data!.length,
-                          (index) => SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                Text(
-                                  "Soal no ${index + 1}",
-                                  style: const TextStyle(color: Colors.black),
-                                ),
-                                if (soal!.data![index].questionTitle != null)
-                                  Html(data: soal!.data![index].questionTitle),
-                                // Text(
-                                //   "${soal!.data![index].questionTitle}",
-                                //   style: TextStyle(color: Colors.black),
-                                // ),
-                                if (soal!.data![index].questionTitleImg != null)
-                                  Image.network(
-                                    soal!.data![index].questionTitleImg!,
-                                    errorBuilder: (context, _, s) {
-                                      return Container();
-                                    },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TabBarView(
+                          controller: _controller,
+                          children: List.generate(
+                            soal!.data!.length,
+                            (index) => SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Soal no ${index + 1}",
+                                    style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w400,
+                                        color: Color(0xff979797)),
                                   ),
-                                _buildPilihanJawaban(
-                                  "A",
-                                  soal!.data![index].optionA,
-                                  soal!.data![index].optionAImg,
-                                  index,
-                                  soal!.data![index].studentAnswer,
-                                ),
-                                _buildPilihanJawaban(
-                                  "B",
-                                  soal!.data![index].optionB,
-                                  soal!.data![index].optionBImg,
-                                  index,
-                                  soal!.data![index].studentAnswer,
-                                ),
-                                _buildPilihanJawaban(
-                                  "C",
-                                  soal!.data![index].optionC,
-                                  soal!.data![index].optionCImg,
-                                  index,
-                                  soal!.data![index].studentAnswer,
-                                ),
-                                _buildPilihanJawaban(
-                                  "D",
-                                  soal!.data![index].optionD,
-                                  soal!.data![index].optionDImg,
-                                  index,
-                                  soal!.data![index].studentAnswer,
-                                ),
-                                _buildPilihanJawaban(
-                                  "E",
-                                  soal!.data![index].optionE,
-                                  soal!.data![index].optionEImg,
-                                  index,
-                                  soal!.data![index].studentAnswer,
-                                ),
-                              ],
+                                  if (soal!.data![index].questionTitle != null)
+                                    Html(
+                                      data: soal!.data![index].questionTitle,
+                                      style: {
+                                        "body": Style(padding: EdgeInsets.zero),
+                                        "p": Style(fontSize: FontSize(12))
+                                      },
+                                    ),
+                                  // Text(
+                                  //   "${soal!.data![index].questionTitle}",
+                                  //   style: TextStyle(color: Colors.black),
+                                  // ),
+                                  if (soal!.data![index].questionTitleImg !=
+                                      null)
+                                    Image.network(
+                                      soal!.data![index].questionTitleImg!,
+                                      errorBuilder: (context, _, s) {
+                                        return Container();
+                                      },
+                                    ),
+                                  _buildPilihanJawaban(
+                                    "A",
+                                    soal!.data![index].optionA,
+                                    soal!.data![index].optionAImg,
+                                    index,
+                                    soal!.data![index].studentAnswer,
+                                  ),
+                                  _buildPilihanJawaban(
+                                    "B",
+                                    soal!.data![index].optionB,
+                                    soal!.data![index].optionBImg,
+                                    index,
+                                    soal!.data![index].studentAnswer,
+                                  ),
+                                  _buildPilihanJawaban(
+                                    "C",
+                                    soal!.data![index].optionC,
+                                    soal!.data![index].optionCImg,
+                                    index,
+                                    soal!.data![index].studentAnswer,
+                                  ),
+                                  _buildPilihanJawaban(
+                                    "D",
+                                    soal!.data![index].optionD,
+                                    soal!.data![index].optionDImg,
+                                    index,
+                                    soal!.data![index].studentAnswer,
+                                  ),
+                                  _buildPilihanJawaban(
+                                    "E",
+                                    soal!.data![index].optionE,
+                                    soal!.data![index].optionEImg,
+                                    index,
+                                    soal!.data![index].studentAnswer,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                    ElevatedButton(
-                        onPressed: () async {
-                          if (soal!.data!.length - 1 == _controller.index) {
-                            isLoading = true;
-                            setState(() {});
-                            // Payload
-                            final firebaseEmail =
-                                FirebaseAuth.instance.currentUser!.email;
-                            String email = "alitopan@widyaedu.com";
-                            String exerciseId = widget.id;
-                            List<String> answer = [];
-                            List<String> idSoal = [];
-
-                            for (var element in soal!.data!) {
-                              answer.add(element.studentAnswer ?? "X");
-                              idSoal.add(element.bankQuestionId!);
-                            }
-
-                            final payload = {
-                              "user_email": email,
-                              "exercise_id": exerciseId,
-                              "student_answer": answer,
-                              "bank_question_id": idSoal
-                            };
-
-                            print(payload);
-
-                            final result = await LatihanSoalApi()
-                                .postInputJawaban(payload);
-                            if (result != null) {
-                              final data = SimpleResponse.fromJson(result);
-                              if (data.status == 1) {
-                                isLoading = false;
-                                setState(() {});
-                                Navigator.of(context).pop();
-                                // Navigator.of(context).pop();
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        const ResultPage()));
-                              }
-                            }
-                          } else {
-                            _controller.animateTo(_controller.index + 1);
-                          }
-                        },
-                        child: Text(soal!.data!.length - 1 == _controller.index
-                            ? "Kumpulin"
-                            : "Selanjutnya")),
                   ],
                 ),
         ),
@@ -193,24 +246,118 @@ class _KerjakanLatihanSoalPageState extends State<KerjakanLatihanSoalPage>
     );
   }
 
-  Container _buildPilihanJawaban(option, answerText, img, index, userAnswer) {
+  Widget _buildPilihanJawaban(option, answerText, img, index, userAnswer) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 2),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(width: 3, color: Colors.grey),
+        ),
+        child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: option == userAnswer
+                  ? Colors.blue.withOpacity(0.4)
+                  : Colors.white,
+            ),
+            onPressed: () {
+              soal!.data![index].studentAnswer = option;
+              setState(() {});
+            },
+            child: Builder(builder: (context) {
+              if (img != null) return Image.network("$img");
+              return Html(data: "$option. $answerText", style: {
+                "body": Style(
+                  color: !(option == userAnswer) ? Colors.black : Colors.white,
+                )
+              });
+            })),
+      ),
+    );
+  }
+}
+
+class BottomSheetConfirmation extends StatefulWidget {
+  const BottomSheetConfirmation({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<BottomSheetConfirmation> createState() =>
+      _BottomSheetConfirmationState();
+}
+
+class _BottomSheetConfirmationState extends State<BottomSheetConfirmation> {
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            primary: option == userAnswer ? Colors.blue : Colors.white,
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(25), topRight: Radius.circular(25))),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            height: 5,
+            width: 100,
+            decoration: BoxDecoration(
+                color: Color(0xffC4C4C4),
+                borderRadius: BorderRadius.circular(10)),
           ),
-          onPressed: () {
-            soal!.data![index].studentAnswer = option;
-            setState(() {});
-          },
-          child: Builder(builder: (context) {
-            if (img != null) return Image.network("$img");
-            return Html(data: "$option. $answerText", style: {
-              "body": Style(
-                color: !(option == userAnswer) ? Colors.blue : Colors.white,
-              )
-            });
-          })),
+          SizedBox(
+            height: 15,
+          ),
+          Image.asset("assets/img/ic_confirmation.png"),
+          SizedBox(
+            height: 15,
+          ),
+          Text(
+            'Kumpulkan latihan soal sekarang?',
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+          ),
+          Text(
+            'Boleh langsung kumpulin dong',
+            style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Color(0xff9C9C9C)),
+          ),
+          Row(
+            children: [
+              Expanded(
+                  child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(false);
+                      },
+                      child: Text(
+                        'Nanti Dulu',
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xff3A7FD5)),
+                      ))),
+              SizedBox(
+                width: 15,
+              ),
+              Expanded(
+                  child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(true);
+                      },
+                      child: Text(
+                        'Ya',
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white),
+                      )))
+            ],
+          )
+        ],
+      ),
     );
   }
 }

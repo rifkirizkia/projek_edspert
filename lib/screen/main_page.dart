@@ -18,13 +18,18 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(onPressed: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => DiscussionPage(),
+      floatingActionButton: FloatingActionButton(
+          child: Image.asset(
+            "assets/img/ic_discuss.png",
+            height: 40,
           ),
-        );
-      }),
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => DiscussionPage(),
+              ),
+            );
+          }),
       bottomNavigationBar: _buildBottomNavigation(),
       body: PageView(
         controller: _pc,
