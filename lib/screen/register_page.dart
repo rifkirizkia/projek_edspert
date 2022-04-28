@@ -196,65 +196,33 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Text('Kelas',
                   style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
             ),
-            DropdownButtonHideUnderline(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(
-                          color: const Color.fromARGB(255, 214, 214, 214),
-                          style: BorderStyle.solid,
-                          width: 1),
-                      borderRadius: BorderRadius.circular(8)),
-                  child: DropdownButtonFormField2(
-                    decoration: InputDecoration(
-                      fillColor: Colors.white,
-                      isDense: true,
-                      contentPadding: EdgeInsets.zero,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    isExpanded: true,
-                    hint: const Text(
-                      'Pilih kelas',
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    icon: const Icon(
-                      Icons.arrow_drop_down,
-                      color: Colors.black45,
-                    ),
-                    iconSize: 30,
-                    buttonHeight: 60,
-                    buttonPadding: const EdgeInsets.only(left: 20, right: 10),
-                    dropdownDecoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    items: kelas
-                        .map((item) => DropdownMenuItem<String>(
-                              value: item,
-                              child: Text(
-                                item,
-                                style: const TextStyle(
-                                    fontSize: 14, color: Colors.black),
-                              ),
-                            ))
-                        .toList(),
-                    validator: (value) {
-                      if (value == null) {
-                        return 'Tolong pilih kelas anda';
-                      }
-                      return null;
-                    },
-                    onChanged: (value) {
-                      selectedValue = value as String;
-                    },
-                    onSaved: (value) {
-                      selectedValue = value.toString();
-                    },
-                  ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.only(left: 20),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                        color: const Color.fromARGB(255, 214, 214, 214),
+                        style: BorderStyle.solid,
+                        width: 1),
+                    borderRadius: BorderRadius.circular(8)),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                      value: selectedValue,
+                      items: kelas
+                          .map(
+                            (e) => DropdownMenuItem<String>(
+                              child: Text(e),
+                              value: e,
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (String? val) {
+                        selectedValue = val!;
+                        setState(() {});
+                      }),
                 ),
               ),
             ),

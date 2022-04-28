@@ -31,7 +31,7 @@ class _KerjakanLatihanSoalPageState extends State<KerjakanLatihanSoalPage>
         length: soal!.data!.length,
         vsync: this,
       );
-      _controller.addListener(() {
+      _controller!.addListener(() {
         // if (!_controller.indexIsChanging) {
         //   if (_controller.index == soal!.data!.length - 1)
         // }
@@ -49,7 +49,7 @@ class _KerjakanLatihanSoalPageState extends State<KerjakanLatihanSoalPage>
   }
 
   bool isLoading = false;
-  late TabController _controller;
+  TabController? _controller;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,7 +68,7 @@ class _KerjakanLatihanSoalPageState extends State<KerjakanLatihanSoalPage>
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10))),
                   onPressed: () async {
-                    if (soal!.data!.length - 1 == _controller.index) {
+                    if (soal!.data!.length - 1 == _controller!.index) {
                       final resultU = await showModalBottomSheet(
                           context: context,
                           isScrollControlled: true,
@@ -131,11 +131,11 @@ class _KerjakanLatihanSoalPageState extends State<KerjakanLatihanSoalPage>
                         idSoal.add(element.bankQuestionId!);
                       }
                     } else {
-                      _controller.animateTo(_controller.index + 1);
+                      _controller!.animateTo(_controller!.index + 1);
                     }
                   },
                   child: Text(
-                    soal!.data!.length - 1 == _controller.index
+                    soal!.data!.length - 1 == _controller!.index
                         ? "Kumpulin"
                         : "Selanjutnya",
                     style: const TextStyle(fontSize: 12),
@@ -145,7 +145,7 @@ class _KerjakanLatihanSoalPageState extends State<KerjakanLatihanSoalPage>
       body: ModalProgressHUD(
         inAsyncCall: isLoading,
         child: Container(
-          child: _controller == null
+          child: soal == null
               ? const Center(child: CircularProgressIndicator())
               : Column(
                   children: [

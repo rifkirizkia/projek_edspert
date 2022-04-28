@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projek_edspert/controller/AuthProviderController.dart';
 import 'package:projek_edspert/helpers/preference_helper.dart';
+import 'package:projek_edspert/screen/edit_profile_page.dart';
 import 'package:provider/provider.dart';
 
 import '../helpers/user_email.dart';
@@ -44,7 +45,13 @@ class _ProfilePageState extends State<ProfilePage> {
         title: const Text('Akun Saya'),
         actions: [
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: ((context) => const EditProfile()),
+                ),
+              );
+            },
             child: const Text(
               'Edit',
               style: TextStyle(color: Colors.white),
@@ -156,7 +163,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               color: Colors.black.withAlpha(66), fontSize: 12),
                         ),
                         Text(
-                          user!.data!.kelas!,
+                          'kelas',
                           style: const TextStyle(fontSize: 13),
                         ),
                         const SizedBox(

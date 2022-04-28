@@ -16,9 +16,9 @@ class PreferenceHelper {
     await _pref.setString(key, data);
   }
 
-  Future _getString(key) async {
+  Future<String?> _getString(key) async {
     final _pref = await sharedPref();
-    await _pref.getString(key);
+    return _pref.getString(key);
   }
 
   setUserData(DataUserByEmail data) async {
@@ -29,7 +29,7 @@ class PreferenceHelper {
 
   Future<DataUserByEmail?> getUserData() async {
     final user = await _getString(userData);
-    final jsonUserData = jsonDecode(user);
+    final jsonUserData = jsonDecode(user!);
     final userDataModel = DataUserByEmail.fromJson(jsonUserData);
     return userDataModel;
   }

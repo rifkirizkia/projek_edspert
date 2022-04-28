@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:projek_edspert/helpers/user_email.dart';
 import 'package:projek_edspert/repository/latihan_soal_api.dart';
 import 'package:projek_edspert/screen/kerjakan_latihan_soal.dart';
 
@@ -20,11 +21,13 @@ class _PaketSoalPageState extends State<PaketSoalPage> {
 
   getMateri(id) async {
     final response =
-        await LatihanSoalApi().getMateri("alitopan@widyaedu.com", id);
+        await LatihanSoalApi().getMateri(UserEmail.getUserEmail(), id);
     print(response);
     if (response != null) {
       materi = Materi.fromJson(response);
       final idMateri = materi!.data!.listCourseContent![0].courseId;
+      print('hasil id Materi');
+      print(idMateri);
       await getSubMateri(idMateri);
     }
   }
@@ -33,11 +36,13 @@ class _PaketSoalPageState extends State<PaketSoalPage> {
 
   getSubMateri(id) async {
     final response =
-        await LatihanSoalApi().getSubMateri("alitopan@widyaedu.com", id);
+        await LatihanSoalApi().getSubMateri(UserEmail.getUserEmail(), id);
     print(response);
     if (response != null) {
       subMateri = SubMateri.fromJson(response);
       final idMateri = subMateri!.data![0].subCourseContentId;
+      print('isi idMateri');
+      print(subMateri);
       await getPaketSoal(idMateri);
       setState(() {});
     }
@@ -45,7 +50,7 @@ class _PaketSoalPageState extends State<PaketSoalPage> {
 
   getPaketSoal(id) async {
     final response =
-        await LatihanSoalApi().getPaketSoal("alitopan@widyaedu.com", id);
+        await LatihanSoalApi().getPaketSoal(UserEmail.getUserEmail(), id);
     print(response);
     if (response != null) {
       paketSoal = PaketSoal.fromJson(response);
@@ -58,8 +63,6 @@ class _PaketSoalPageState extends State<PaketSoalPage> {
     // TODO: implement initState
     super.initState();
     getMateri(widget.id);
-    getSubMateri(widget.id);
-    getPaketSoal(widget.id);
   }
 
   @override

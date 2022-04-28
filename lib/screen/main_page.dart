@@ -34,7 +34,7 @@ class _MainPageState extends State<MainPage> {
       body: PageView(
         controller: _pc,
         physics: const NeverScrollableScrollPhysics(),
-        children: const [
+        children: [
           HomePage(),
           ProfilePage(),
         ],

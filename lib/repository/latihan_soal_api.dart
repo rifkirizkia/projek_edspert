@@ -79,9 +79,9 @@ class LatihanSoalApi {
     return result;
   }
 
-  Future<Map<String, dynamic>?> getPaketSoal(email, course_id) async {
+  Future<Map<String, dynamic>?> getPaketSoal(email, courseId) async {
     final result = await _getRequest(endpoint: ApiUrl.latihanPaketSoal, param: {
-      "course_id": course_id,
+      "course_id": courseId,
       "user_email": UserEmail.getUserEmail(),
     });
     return result;
