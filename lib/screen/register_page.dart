@@ -277,7 +277,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           DataUserByEmail.fromJson(result.data!);
                       if (registerResult.status == 1) {
                         await PreferenceHelper().setUserData(registerResult);
-                        Navigator.of(context).push(
+                        Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
                             builder: ((context) => const MainPage()),
                           ),

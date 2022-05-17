@@ -44,31 +44,31 @@ class AuthProviderController extends ChangeNotifier {
           print(response);
           final userData = DataUserByEmail.fromJson(response.data!);
           if (userData.status == 1) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: ((context) => MainPage()),
-              ),
-            );
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                  builder: (context) => MainPage(),
+                ),
+                (context) => false);
           } else {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: ((context) => RegisterPage()),
-              ),
-            );
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                  builder: (context) => RegisterPage(),
+                ),
+                (context) => false);
           }
         } else {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: ((context) => LoginPage()),
-            ),
-          );
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (context) => LoginPage(),
+              ),
+              (context) => false);
         }
       } else {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: ((context) => LoginPage()),
-          ),
-        );
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => LoginPage(),
+            ),
+            (context) => false);
       }
     });
   }
@@ -82,17 +82,17 @@ class AuthProviderController extends ChangeNotifier {
         final data = DataUserByEmail.fromJson(dataUser.data!);
         if (data.status == 1) {
           await PreferenceHelper().setUserData(data);
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: ((context) => MainPage()),
-            ),
-          );
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (context) => MainPage(),
+              ),
+              (context) => false);
         } else {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: ((context) => RegisterPage()),
-            ),
-          );
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (context) => RegisterPage(),
+              ),
+              (context) => false);
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -107,10 +107,10 @@ class AuthProviderController extends ChangeNotifier {
   signOut(context) async {
     await GoogleSignIn().signOut();
     await FirebaseAuth.instance.signOut();
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: ((context) => LoginPage()),
-      ),
-    );
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => LoginPage(),
+        ),
+        (context) => false);
   }
 }
