@@ -44,27 +44,27 @@ class AuthProviderController extends ChangeNotifier {
           print(response);
           final userData = DataUserByEmail.fromJson(response.data!);
           if (userData.status == 1) {
-            Navigator.of(context).push(
+            Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 builder: ((context) => MainPage()),
               ),
             );
           } else {
-            Navigator.of(context).push(
+            Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 builder: ((context) => RegisterPage()),
               ),
             );
           }
         } else {
-          Navigator.of(context).push(
+          Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: ((context) => LoginPage()),
             ),
           );
         }
       } else {
-        Navigator.of(context).push(
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: ((context) => LoginPage()),
           ),
@@ -82,13 +82,13 @@ class AuthProviderController extends ChangeNotifier {
         final data = DataUserByEmail.fromJson(dataUser.data!);
         if (data.status == 1) {
           await PreferenceHelper().setUserData(data);
-          Navigator.of(context).push(
+          Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: ((context) => MainPage()),
             ),
           );
         } else {
-          Navigator.of(context).push(
+          Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: ((context) => RegisterPage()),
             ),
@@ -107,7 +107,7 @@ class AuthProviderController extends ChangeNotifier {
   signOut(context) async {
     await GoogleSignIn().signOut();
     await FirebaseAuth.instance.signOut();
-    Navigator.of(context).push(
+    Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: ((context) => LoginPage()),
       ),

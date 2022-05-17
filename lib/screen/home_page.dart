@@ -268,7 +268,7 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Hi, $userName",
+                  "Hai, $userName",
                   style: GoogleFonts.poppins()
                       .copyWith(fontSize: 12, fontWeight: FontWeight.w700),
                 ),

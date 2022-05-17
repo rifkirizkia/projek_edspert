@@ -86,7 +86,7 @@ class _MainPageState extends State<MainPage> {
                           height: 20,
                         ),
                         const Text(
-                          'Home',
+                          'Beranda',
                           style: TextStyle(
                             // color: MrtColors.mrtBlueColor,
                             fontSize: 13,
@@ -141,7 +141,7 @@ class _MainPageState extends State<MainPage> {
                           // color: MrtColors.mrtBlueColor,
                         ),
                         Text(
-                          'Profile',
+                          'Profil',
                           style: TextStyle(
                               // color: MrtColors.mrtBlueColor,
                               fontSize: 13),
