@@ -35,7 +35,7 @@ class MapelPage extends StatelessWidget {
                 child: MapelWidget(
                   title: currentMapel.courseName!,
                   count: currentMapel.jumlahDone.toString(),
-                  total: currentMapel.jumlahDone.toString(),
+                  total: currentMapel.jumlahMateri.toString(),
                 ));
           }),
         ),

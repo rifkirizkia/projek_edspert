@@ -24,7 +24,6 @@ class _KerjakanLatihanSoalPageState extends State<KerjakanLatihanSoalPage>
   getSoalLatihan(id) async {
     final response =
         await LatihanSoalApi().postMulaiKerjakan(UserEmail.getUserEmail(), id);
-    print(response);
     if (response != null) {
       soal = KerjakanLatihanSoal.fromJson(response);
       _controller = TabController(
@@ -56,92 +55,90 @@ class _KerjakanLatihanSoalPageState extends State<KerjakanLatihanSoalPage>
       appBar: AppBar(
         title: const Text("Latihan Soal"),
       ),
-      bottomNavigationBar: Container(
-          margin: const EdgeInsets.only(bottom: 20, right: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      primary: const Color(0xff3A7FD5),
-                      fixedSize: const Size(135, 33),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10))),
-                  onPressed: () async {
-                    if (soal!.data!.length - 1 == _controller!.index) {
-                      final resultU = await showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: Colors.transparent,
-                          builder: (context) {
-                            return const BottomSheetConfirmation();
-                          });
-                      print(resultU);
-                      if (resultU == true) {
-                        print('Kirim ke backend');
-                        List<String> answer = [];
-                        List<String> questionId = [];
-                        soal!.data!.forEach((element) {
-                          questionId.add(element.bankQuestionId!);
-                          answer.add(element.studentAnswer!);
-                        });
-
-                        final payload = {
-                          "user_email": UserEmail.getUserEmail(),
-                          "exercise_id": widget.id,
-                          "bank_question_id": questionId,
-                          "student_answer": answer
-                        };
-
-                        print(payload);
-
-                        final result =
-                            await LatihanSoalApi().postInputJawaban(payload);
-                        if (result != null) {
-                          final data = SimpleResponse.fromJson(result);
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (BuildContext context) => ResultPage(
-                                    exerciseId: widget.id,
-                                  )));
-                          // if (data.status == 1) {
-                          //   isLoading = false;
-                          //   setState(() {});
-                          //   Navigator.of(context).pop();
-                          //   // Navigator.of(context).pop();
-                          // }
+      bottomNavigationBar: soal == null
+          ? const Center(child: CircularProgressIndicator())
+          : Container(
+              margin: const EdgeInsets.only(bottom: 20, right: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: const Color(0xff3A7FD5),
+                          fixedSize: const Size(135, 33),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10))),
+                      onPressed: () async {
+                        if (soal!.data!.length - 1 == _controller!.index) {
+                          final resultU = await showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (context) {
+                                return const BottomSheetConfirmation();
+                              });
+                          print(resultU);
+                          if (resultU == true) {
+                            print('Kirim ke backend');
+                            List<String> answer = [];
+                            List<String> questionId = [];
+                            soal!.data!.forEach((element) {
+                              questionId.add(element.bankQuestionId!);
+                              answer.add(element.studentAnswer!);
+                            });
+                            final payload = {
+                              "user_email": UserEmail.getUserEmail(),
+                              "exercise_id": widget.id,
+                              "bank_question_id": questionId,
+                              "student_answer": answer
+                            };
+                            print(payload);
+                            final result = await LatihanSoalApi()
+                                .postInputJawaban(payload);
+                            if (result != null) {
+                              final data = SimpleResponse.fromJson(result);
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (BuildContext context) => ResultPage(
+                                        exerciseId: widget.id,
+                                      )));
+                              // if (data.status == 1) {
+                              //   isLoading = false;
+                              //   setState(() {});
+                              //   Navigator.of(context).pop();
+                              //   // Navigator.of(context).pop();
+                              // }
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          'Submit Gagal. Silahkan Ulangi')));
+                            }
+                          }
+                          // isLoading = true;
+                          // setState(() {});
+                          // Payload
+                          final firebaseEmail =
+                              FirebaseAuth.instance.currentUser!.email;
+                          String? email = UserEmail.getUserEmail();
+                          String exerciseId = widget.id;
+                          List<String> answer = [];
+                          List<String> idSoal = [];
+                          for (var element in soal!.data!) {
+                            answer.add(element.studentAnswer ?? "X");
+                            idSoal.add(element.bankQuestionId!);
+                          }
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content:
-                                      Text('Submit Gagal. Silahkan Ulangi')));
+                          _controller!.animateTo(_controller!.index + 1);
                         }
-                      }
-                      // isLoading = true;
-                      // setState(() {});
-                      // Payload
-                      final firebaseEmail =
-                          FirebaseAuth.instance.currentUser!.email;
-                      String? email = UserEmail.getUserEmail();
-                      String exerciseId = widget.id;
-                      List<String> answer = [];
-                      List<String> idSoal = [];
-
-                      for (var element in soal!.data!) {
-                        answer.add(element.studentAnswer ?? "X");
-                        idSoal.add(element.bankQuestionId!);
-                      }
-                    } else {
-                      _controller!.animateTo(_controller!.index + 1);
-                    }
-                  },
-                  child: Text(
-                    soal!.data!.length - 1 == _controller!.index
-                        ? "Kumpulin"
-                        : "Selanjutnya",
-                    style: const TextStyle(fontSize: 12),
-                  )),
-            ],
-          )),
+                      },
+                      child: Text(
+                        soal!.data!.length - 1 == _controller!.index
+                            ? "Kumpulin"
+                            : "Selanjutnya",
+                        style: const TextStyle(fontSize: 12),
+                      )),
+                ],
+              )),
       body: ModalProgressHUD(
         inAsyncCall: isLoading,
         child: Container(
@@ -179,16 +176,24 @@ class _KerjakanLatihanSoalPageState extends State<KerjakanLatihanSoalPage>
                                   ),
                                   if (soal!.data![index].questionTitle != null)
                                     Html(
-                                      data: soal!.data![index].questionTitle,
-                                      style: {
-                                        "body": Style(padding: EdgeInsets.zero),
-                                        "p": Style(fontSize: FontSize(12))
-                                      },
-                                    ),
-                                  // Text(
-                                  //   "${soal!.data![index].questionTitle}",
-                                  //   style: TextStyle(color: Colors.black),
-                                  // ),
+                                        data: soal!.data![index].questionTitle,
+                                        style: {
+                                          "body":
+                                              Style(padding: EdgeInsets.zero),
+                                          "p": Style(
+                                              fontSize: const FontSize(12))
+                                        },
+                                        customRender: {
+                                          "table": (context, child) {
+                                            // return null;
+                                            return SingleChildScrollView(
+                                              scrollDirection: Axis.horizontal,
+                                              child: (context.tree
+                                                      as TableLayoutElement)
+                                                  .toWidget(context),
+                                            );
+                                          }
+                                        }),
                                   if (soal!.data![index].questionTitleImg !=
                                       null)
                                     Image.network(
@@ -231,7 +236,7 @@ class _KerjakanLatihanSoalPageState extends State<KerjakanLatihanSoalPage>
                                     soal!.data![index].optionEImg,
                                     index,
                                     soal!.data![index].studentAnswer,
-                                  ),
+                                  )
                                 ],
                               ),
                             ),
@@ -250,7 +255,7 @@ class _KerjakanLatihanSoalPageState extends State<KerjakanLatihanSoalPage>
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 2),
+        margin: const EdgeInsets.symmetric(vertical: 2),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           border: Border.all(width: 3, color: Colors.grey),
@@ -267,11 +272,26 @@ class _KerjakanLatihanSoalPageState extends State<KerjakanLatihanSoalPage>
             },
             child: Builder(builder: (context) {
               if (img != null) return Image.network("$img");
-              return Html(data: "$option. $answerText", style: {
-                "body": Style(
-                  color: !(option == userAnswer) ? Colors.black : Colors.white,
-                )
-              });
+              return Row(
+                children: [
+                  Text(
+                    "$option.",
+                    style: TextStyle(
+                      color:
+                          !(option == userAnswer) ? Colors.black : Colors.white,
+                    ),
+                  ),
+                  Expanded(
+                    child: Html(data: "$answerText", style: {
+                      "body": Style(
+                        color: !(option == userAnswer)
+                            ? Colors.black
+                            : Colors.white,
+                      )
+                    }),
+                  ),
+                ],
+              );
             })),
       ),
     );
@@ -292,8 +312,8 @@ class _BottomSheetConfirmationState extends State<BottomSheetConfirmation> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
+      padding: const EdgeInsets.all(20),
+      decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(25), topRight: Radius.circular(25))),
@@ -304,21 +324,21 @@ class _BottomSheetConfirmationState extends State<BottomSheetConfirmation> {
             height: 5,
             width: 100,
             decoration: BoxDecoration(
-                color: Color(0xffC4C4C4),
+                color: const Color(0xffC4C4C4),
                 borderRadius: BorderRadius.circular(10)),
           ),
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
           Image.asset("assets/img/ic_confirmation.png"),
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
-          Text(
+          const Text(
             'Kumpulkan latihan soal sekarang?',
             style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
           ),
-          Text(
+          const Text(
             'Boleh langsung kumpulin dong',
             style: TextStyle(
                 fontSize: 12,
@@ -329,25 +349,38 @@ class _BottomSheetConfirmationState extends State<BottomSheetConfirmation> {
             children: [
               Expanded(
                   child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.white,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            side: const BorderSide(
+                                color: Colors.blue,
+                                style: BorderStyle.solid,
+                                width: 1)),
+                      ),
                       onPressed: () {
                         Navigator.of(context).pop(false);
                       },
-                      child: Text(
+                      child: const Text(
                         'Nanti Dulu',
                         style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
                             color: Color(0xff3A7FD5)),
                       ))),
-              SizedBox(
+              const SizedBox(
                 width: 15,
               ),
               Expanded(
                   child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      )),
                       onPressed: () {
                         Navigator.of(context).pop(true);
                       },
-                      child: Text(
+                      child: const Text(
                         'Ya',
                         style: TextStyle(
                             fontSize: 12,

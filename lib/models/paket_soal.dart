@@ -1,7 +1,9 @@
+import 'package:projek_edspert/screen/paket_soal.dart';
+
 class PaketSoal {
   int? status;
   String? message;
-  List<Data>? data;
+  List<PaketSoalData>? data;
 
   PaketSoal({this.status, this.message, this.data});
 
@@ -9,9 +11,9 @@ class PaketSoal {
     status = json['status'];
     message = json['message'];
     if (json['data'] != null) {
-      data = <Data>[];
+      data = <PaketSoalData>[];
       json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
+        data!.add(new PaketSoalData.fromJson(v));
       });
     }
   }
@@ -27,7 +29,7 @@ class PaketSoal {
   }
 }
 
-class Data {
+class PaketSoalData {
   String? exerciseId;
   String? exerciseTitle;
   String? accessType;
@@ -36,7 +38,7 @@ class Data {
   String? jumlahSoal;
   int? jumlahDone;
 
-  Data(
+  PaketSoalData(
       {this.exerciseId,
       this.exerciseTitle,
       this.accessType,
@@ -45,7 +47,7 @@ class Data {
       this.jumlahSoal,
       this.jumlahDone});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  PaketSoalData.fromJson(Map<String, dynamic> json) {
     exerciseId = json['exercise_id'];
     exerciseTitle = json['exercise_title'];
     accessType = json['access_type'];

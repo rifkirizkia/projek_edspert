@@ -22,8 +22,8 @@ class _HomePageState extends State<HomePage> {
   getMapel() async {
     loading = true;
     setState(() {});
-    final response =
-        await LatihanSoalApi().getMataPelajaran("alitopan@widyaedu.com", "IPA");
+    final response = await LatihanSoalApi()
+        .getMataPelajaran(UserEmail.getUserEmail(), "IPA");
     print(response);
     if (response != null) {
       mapelList = MataPelajaranList.fromJson(response);

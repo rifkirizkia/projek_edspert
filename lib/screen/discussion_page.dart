@@ -73,35 +73,35 @@ class _DiscussionPageState extends State<DiscussionPage> {
                         margin: const EdgeInsets.only(bottom: 10),
                         width: MediaQuery.of(context).size.width * 0.8,
                         child: Column(
-                          crossAxisAlignment: user.uid == currentChat["uid"]
-                              ? CrossAxisAlignment.end
-                              : CrossAxisAlignment.start,
-                          children: [
-                            Text(currentChat["nama"],
-                                style: const TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w400,
-                                    color: Color(0xff5200FF))),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 6.0, vertical: 10.0),
-                              decoration: BoxDecoration(
-                                  color: user.uid == currentChat["uid"]
-                                      ? const Color(0xff3A7FD5)
-                                      : const Color(0xffFFDCDC),
-                                  borderRadius: user.uid == currentChat["uid"]
-                                      ? const BorderRadius.only(
-                                          bottomLeft: Radius.circular(10),
-                                          topLeft: Radius.circular(10),
-                                          topRight: Radius.circular(10),
-                                        )
-                                      : const BorderRadius.only(
-                                          bottomLeft: Radius.circular(10),
-                                          bottomRight: Radius.circular(10),
-                                          topRight: Radius.circular(10),
-                                        )),
-                              child: Text(
-                                  currentChat["type"] == "file"
+                            crossAxisAlignment: user.uid == currentChat["uid"]
+                                ? CrossAxisAlignment.end
+                                : CrossAxisAlignment.start,
+                            children: [
+                              Text(currentChat["nama"],
+                                  style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w400,
+                                      color: Color(0xff5200FF))),
+                              Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 6.0, vertical: 10.0),
+                                  decoration: BoxDecoration(
+                                      color: user.uid == currentChat["uid"]
+                                          ? const Color(0xff3A7FD5)
+                                          : const Color(0xffFFDCDC),
+                                      borderRadius: user.uid ==
+                                              currentChat["uid"]
+                                          ? const BorderRadius.only(
+                                              bottomLeft: Radius.circular(10),
+                                              topLeft: Radius.circular(10),
+                                              topRight: Radius.circular(10),
+                                            )
+                                          : const BorderRadius.only(
+                                              bottomLeft: Radius.circular(10),
+                                              bottomRight: Radius.circular(10),
+                                              topRight: Radius.circular(10),
+                                            )),
+                                  child: currentChat["type"] == "file"
                                       ? Image.network(
                                           currentChat["file_url"],
                                           errorBuilder:
@@ -112,25 +112,24 @@ class _DiscussionPageState extends State<DiscussionPage> {
                                             );
                                           }),
                                         )
-                                      : currentChat["content"],
-                                  style: TextStyle(
-                                      fontSize: 13,
-                                      color: user.uid == currentChat["uid"]
-                                          ? Colors.white
-                                          : Colors.black,
-                                      fontWeight: FontWeight.w400)),
-                            ),
-                            Text(
-                                currentDate == null
-                                    ? ""
-                                    : DateFormat("dd-MMM-yyy HH:mm")
-                                        .format(currentDate),
-                                style: const TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w400,
-                                    color: Color(0xff979797))),
-                          ],
-                        ),
+                                      : Text(currentChat["content"],
+                                          style: TextStyle(
+                                              fontSize: 13,
+                                              color:
+                                                  user.uid == currentChat["uid"]
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                              fontWeight: FontWeight.w400))),
+                              Text(
+                                  currentDate == null
+                                      ? ""
+                                      : DateFormat("dd-MMM-yyy HH:mm")
+                                          .format(currentDate),
+                                  style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w400,
+                                      color: Color(0xff979797))),
+                            ]),
                       );
                     },
                   );
@@ -169,8 +168,8 @@ class _DiscussionPageState extends State<DiscussionPage> {
                                         final imageResult = await ImagePicker()
                                             .pickImage(
                                                 source: ImageSource.camera,
-                                                maxHeight: 500,
-                                                maxWidth: 500);
+                                                maxHeight: 300,
+                                                maxWidth: 300);
 
                                         if (imageResult != null) {
                                           File file = File(imageResult.path);
@@ -179,6 +178,7 @@ class _DiscussionPageState extends State<DiscussionPage> {
                                           String room = widget.id ?? "kimia";
                                           String ref =
                                               "chat/$room/${user.uid}/${imageResult.name}";
+
                                           final imgResUpload =
                                               await FirebaseStorage.instance
                                                   .ref()
@@ -208,7 +208,8 @@ class _DiscussionPageState extends State<DiscussionPage> {
                                         Icons.camera_alt,
                                         color: Color(0xff3A7FD5),
                                       )),
-                                  contentPadding: EdgeInsets.only(left: 10),
+                                  contentPadding:
+                                      const EdgeInsets.only(left: 10),
                                   border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10)),
                                   hintText: "Tulis pesan disini...",

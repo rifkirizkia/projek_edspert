@@ -16,6 +16,14 @@ class PaketSoalPage extends StatefulWidget {
 
 class _PaketSoalPageState extends State<PaketSoalPage> {
   PaketSoal? paketSoal;
+  getPaketSoal(id) async {
+    final response = await LatihanSoalApi().getPaketSoal(id);
+    print(response);
+    if (response != null) {
+      paketSoal = PaketSoal.fromJson(response);
+      setState(() {});
+    }
+  }
 
   Materi? materi;
 
@@ -48,21 +56,13 @@ class _PaketSoalPageState extends State<PaketSoalPage> {
     }
   }
 
-  getPaketSoal(id) async {
-    final response =
-        await LatihanSoalApi().getPaketSoal(UserEmail.getUserEmail(), id);
-    print(response);
-    if (response != null) {
-      paketSoal = PaketSoal.fromJson(response);
-      setState(() {});
-    }
-  }
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getMateri(widget.id);
+    getSubMateri(widget.id);
+    getPaketSoal(widget.id);
   }
 
   @override
@@ -82,22 +82,38 @@ class _PaketSoalPageState extends State<PaketSoalPage> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               Expanded(
-                child: paketSoal == null
-                    ? Container(
-                        height: 50,
-                        child: Center(child: CircularProgressIndicator()))
-                    : GridView.count(
-                        mainAxisSpacing: 10,
-                        crossAxisSpacing: 10,
-                        crossAxisCount: 2,
-                        childAspectRatio: 3 / 2.5,
-                        children: List.generate(
-                            paketSoal!.data!.length,
-                            (index) => PaketSoalWidget(
-                                  title: paketSoal!.data![index].exerciseTitle!,
-                                  id: paketSoal!.data![index].exerciseId!,
-                                ))),
-              ),
+                  child: paketSoal == null
+                      ? const SizedBox(
+                          height: 50,
+                          child: Center(child: CircularProgressIndicator()))
+                      : SingleChildScrollView(
+                          child: Center(
+                            child: Wrap(
+                              children: List.generate(paketSoal!.data!.length,
+                                  (index) {
+                                return Container(
+                                  padding: const EdgeInsets.all(3),
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.45,
+                                  child: PaketSoalWidget(
+                                    data: paketSoal!.data![index],
+                                    title:
+                                        paketSoal!.data![index].exerciseTitle!,
+                                    id: paketSoal!.data![index].exerciseId!,
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        )
+                  // GridView.count(
+                  //     mainAxisSpacing: 10,
+                  //     crossAxisSpacing: 10,
+                  //     crossAxisCount: 2,
+                  //     childAspectRatio: 3 / 2.5,
+                  //     children:
+                  //         ),
+                  ),
             ],
           ),
         ));
@@ -107,9 +123,11 @@ class _PaketSoalPageState extends State<PaketSoalPage> {
 class PaketSoalWidget extends StatelessWidget {
   const PaketSoalWidget({
     Key? key,
+    required this.data,
     required this.title,
     required this.id,
   }) : super(key: key);
+  final PaketSoalData data;
   final String title;
   final String id;
   @override
@@ -147,9 +165,9 @@ class PaketSoalWidget extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Text(
-              "0/0 Paket Soal",
-              style: TextStyle(
+            Text(
+              "${data.jumlahDone}/${data.jumlahSoal} Paket Soal",
+              style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 9,
                   color: Color(0xff8E8E8E)),
