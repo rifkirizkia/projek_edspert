@@ -2,7 +2,7 @@
     package="com.example.projek_edspert">
     <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="Latihan Soal"
+        android:label="Go UTBK"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

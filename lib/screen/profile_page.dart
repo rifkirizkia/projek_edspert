@@ -25,7 +25,6 @@ class _ProfilePageState extends State<ProfilePage> {
   late AuthProviderController controller;
 
   final userName = UserEmail.getUserDisplayName()!;
-  // final userSchool =
 
   @override
   void initState() {
@@ -45,12 +44,15 @@ class _ProfilePageState extends State<ProfilePage> {
         title: const Text('Akun Saya'),
         actions: [
           TextButton(
-            onPressed: () {
-              Navigator.of(context).push(
+            onPressed: () async {
+              final result = await Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: ((context) => const EditProfile()),
                 ),
               );
+              if (result == true) {
+                getUserData();
+              }
             },
             child: const Text(
               'Edit',
@@ -168,7 +170,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 fontSize: 12),
                           ),
                           Text(
-                            'kelas',
+                            user?.data?.kelas ?? "",
                             style: const TextStyle(fontSize: 13),
                           ),
                           const SizedBox(

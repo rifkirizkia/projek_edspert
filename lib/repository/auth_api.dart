@@ -69,6 +69,12 @@ class AuthApi {
     return result;
   }
 
+  Future<NetworkResponse> postUpdateUser(body) async {
+    final result =
+        await _postRequest(endpoint: ApiUrl.userUpdateProfile, body: body);
+    return result;
+  }
+
   Future<NetworkResponse> getLatihanSoal(email) async {
     final result =
         await _getRequest(endpoint: ApiUrl.users, param: {"email": email});

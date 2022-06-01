@@ -173,8 +173,8 @@ class _DiscussionPageState extends State<DiscussionPage> {
 
                                         if (imageResult != null) {
                                           File file = File(imageResult.path);
-                                          final name =
-                                              imageResult.path.split("/");
+                                          // final name =
+                                          //     imageResult.path.split("/");
                                           String room = widget.id ?? "kimia";
                                           String ref =
                                               "chat/$room/${user.uid}/${imageResult.name}";

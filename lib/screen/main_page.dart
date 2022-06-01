@@ -77,6 +77,7 @@ class _MainPageState extends State<MainPage> {
                         curve: Curves.easeInOut,
                         duration: const Duration(microseconds: 1),
                       );
+                      setState(() {});
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -84,6 +85,7 @@ class _MainPageState extends State<MainPage> {
                         Image.asset(
                           "assets/img/ic_home.png",
                           height: 20,
+                          color: index == 0 ? null : Colors.grey,
                         ),
                         const Text(
                           'Beranda',
@@ -132,15 +134,18 @@ class _MainPageState extends State<MainPage> {
                         curve: Curves.easeInOut,
                         duration: const Duration(microseconds: 1),
                       );
+                      setState(() {});
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Icon(
-                          Icons.person,
-                          // color: MrtColors.mrtBlueColor,
-                        ),
-                        Text(
+                      children: [
+                        Image.asset(
+                          "assets/img/ic_profile.png",
+                          color: index == 1 ? null : Colors.grey,
+                        )
+                        // color: MrtColors.mrtBlueColor,
+                        ,
+                        const Text(
                           'Profil',
                           style: TextStyle(
                               // color: MrtColors.mrtBlueColor,

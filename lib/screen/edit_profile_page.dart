@@ -40,9 +40,14 @@ class _EditProfileState extends State<EditProfile> {
     setState(() {});
   }
 
-  initDataUser() {
+  initDataUser() async {
     emailController.text = UserEmail.getUserEmail()!;
-    fullNameController.text = UserEmail.getUserDisplayName()!;
+    //fullNameController.text = UserEmail.getUserDisplayName()!;
+    final dataUser = await PreferenceHelper().getUserData();
+    fullNameController.text = dataUser!.data!.userName!;
+    schoolController.text = dataUser.data!.userAsalSekolah!;
+    gender = dataUser.data!.userGender!;
+    print(dataUser.data!.userGender!);
     setState(() {});
   }
 
@@ -279,17 +284,15 @@ class _EditProfileState extends State<EditProfile> {
                         "gender": gender,
                         "foto": UserEmail.getUserPhotoUrl()
                       };
-                      final result = await AuthApi().postRegisterUser(json);
+                      print("Hasil");
+                      print(json);
+                      final result = await AuthApi().postUpdateUser(json);
                       if (result.status == Status.success) {
                         final registerResult =
                             DataUserByEmail.fromJson(result.data!);
                         if (registerResult.status == 1) {
                           await PreferenceHelper().setUserData(registerResult);
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: ((context) => const MainPage()),
-                            ),
-                          );
+                          Navigator.pop(context, true);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(

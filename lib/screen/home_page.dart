@@ -2,6 +2,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:projek_edspert/helpers/preference_helper.dart';
+import 'package:projek_edspert/models/data_by_user_email.dart';
 import 'package:projek_edspert/models/matapelajaran_list.dart';
 import 'package:projek_edspert/screen/mapel_page.dart';
 import 'package:projek_edspert/screen/paket_soal.dart';
@@ -86,6 +88,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   final userName = UserEmail.getUserDisplayName()!;
+  DataUserByEmail? dataUser;
+  Future getUserData() async {
+    dataUser = await PreferenceHelper().getUserData();
+    setState(() {});
+  }
 
   @override
   void initState() {
@@ -94,6 +101,7 @@ class _HomePageState extends State<HomePage> {
     getMapel();
     getBanner();
     setUpFcm();
+    getUserData();
   }
 
   @override
@@ -268,7 +276,7 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Hai, $userName",
+                  "Hai, " + (dataUser?.data?.userName ?? "Nama User"),
                   style: GoogleFonts.poppins()
                       .copyWith(fontSize: 12, fontWeight: FontWeight.w700),
                 ),
@@ -353,12 +361,29 @@ class MapelWidget extends StatelessWidget {
                         color: const Color(0xfff0f0f0),
                         borderRadius: BorderRadius.circular(10)),
                   ),
-                  Container(
-                    height: 5,
-                    width: MediaQuery.of(context).size.width * 0.4,
-                    decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 58, 127, 213),
-                        borderRadius: BorderRadius.circular(10)),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: int.parse(count),
+                        child: Container(
+                          height: 5,
+                          //width: MediaQuery.of(context).size.width * 0.4,
+                          decoration: BoxDecoration(
+                              color: const Color.fromARGB(255, 58, 127, 213),
+                              borderRadius: BorderRadius.circular(10)),
+                        ),
+                      ),
+                      Expanded(
+                        flex: int.parse(total) - int.parse(count),
+                        child: Container(
+                            // height: 5,
+                            // width: MediaQuery.of(context).size.width * 0.4,
+                            // decoration: BoxDecoration(
+                            //     color: const Color.fromARGB(255, 58, 127, 213),
+                            //     borderRadius: BorderRadius.circular(10)),
+                            ),
+                      ),
+                    ],
                   ),
                 ],
               )
