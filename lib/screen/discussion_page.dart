@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -11,6 +12,9 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:projek_edspert/controller/HomeController.dart';
+
+import '../constant/api_url.dart';
+import '../models/network_response.dart';
 
 class DiscussionPage extends StatefulWidget {
   const DiscussionPage({Key? key, this.id}) : super(key: key);
@@ -39,14 +43,71 @@ class _DiscussionPageState extends State<DiscussionPage> {
       ..selection = TextSelection.fromPosition(
           TextPosition(offset: textController.text.length));
   }
-  // FirebaseMessaging firebaseMessaging = new FirebaseMessaging();
-  // void fcmSubscribe() {
-  //   firebaseMessaging.subscribeToTopic("kimia");
-  // }
-  // void fcmUnSubscribe() {
-  //   firebaseMessaging.unsubscribeFromTopic("kimia");
-  // }
 
+  Dio pushNotifDio() {
+    String uri = "https://fcm.googleapis.com/fcm/";
+    BaseOptions options = BaseOptions(
+      baseUrl: uri,
+      responseType: ResponseType.json,
+      connectTimeout: 60000,
+      receiveTimeout: 60000,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "key=" +
+            "AAAA3pdkFBA:APA91bEpZ_HfFUQS7fZ7WnTBehXpOF53IpDZgi6aG4HfCLEWU6_5Xl5nDGRYtE2ceZZB-2E7cD8rXOOIHTKslmBlrIpbkoNNPDr4qgYOq28eK-hHU0vkAzThe1mzcu2I2p73fxF2L7wJ"
+      },
+    );
+    Dio dio = Dio(options);
+
+    return dio;
+  }
+
+  Future<NetworkResponse> _postNotif({path, body, onSendProgress}) async {
+    // try {
+    final dio = pushNotifDio();
+
+    final res = await dio.post(
+      path,
+      data: body,
+      onSendProgress: onSendProgress,
+    );
+
+    return NetworkResponse.success(res.data);
+    // } catch (e) {
+    //   print('e.toString()');
+    //   print(e.toString());
+    //   Get.snackbar(
+    //     "Terjadi Kesalahan",
+    //     "Silahkan ulangi beberapa saat lagi",
+    //     snackPosition: SnackPosition.BOTTOM,
+    //     colorText: Colors.white,
+    //     backgroundColor: Colors.black,
+    //     dismissDirection: DismissDirection.horizontal,
+    //   );
+    //   return NetworkResponse.error();
+    // // }
+  }
+
+  Future<NetworkResponse> postNotif(
+    title,
+    message,
+  ) async {
+    Map<String, dynamic> data = {};
+
+    final res = await _postNotif(path: ApiUrl.pushNotif, body: {
+      "topics": "/kimia",
+      "notification": {
+        "body": message,
+        "title": title,
+        "image": "",
+        "text": "",
+        "content_available": 1
+      },
+      "data": data,
+      "priority": "high"
+    });
+    return res;
+  }
 
   @override
   void initState() {
@@ -184,8 +245,13 @@ class _DiscussionPageState extends State<DiscussionPage> {
                           child: SizedBox(
                             height: 40,
                             child: TextField(
-                              controller: textController,
                               focusNode: controller.focusNode,
+                              controller: textController,
+                              onTap: () {
+                                setState(() {
+                                  emojiShowing = false;
+                                });
+                              },
                               decoration: InputDecoration(
                                   suffixIcon: IconButton(
                                       onPressed: () async {
@@ -247,15 +313,15 @@ class _DiscussionPageState extends State<DiscussionPage> {
                   ),
                 ),
                 IconButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (textController.text.isEmpty) {
                         return;
                       }
                       print(textController.text);
                       //tambahan
-    //                   void fcmSubscribe() {
-    // firebaseMessaging.subscribeToTopic("kimia");
-  //}
+                      //                   void fcmSubscribe() {
+                      // firebaseMessaging.subscribeToTopic("kimia");
+                      //}
                       final chatContent = {
                         "nama": user.displayName,
                         "uid": user.uid,
@@ -267,6 +333,11 @@ class _DiscussionPageState extends State<DiscussionPage> {
                         "file_url": null,
                         "time": FieldValue.serverTimestamp()
                       };
+                      final res = postNotif(
+                        user.displayName,
+                        textController.text,
+                      );
+                      print(res);
                       chat.add(chatContent).whenComplete(() {
                         textController.clear();
                       });

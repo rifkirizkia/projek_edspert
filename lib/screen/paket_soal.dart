@@ -16,8 +16,8 @@ class PaketSoalPage extends StatefulWidget {
 
 class _PaketSoalPageState extends State<PaketSoalPage> {
   PaketSoal? paketSoal;
-  getPaketSoal(id) async {
-    final response = await LatihanSoalApi().getPaketSoal(id);
+  getPaketSoal(id, id2) async {
+    final response = await LatihanSoalApi().getPaketSoal(id, id2);
     print(response);
     if (response != null) {
       paketSoal = PaketSoal.fromJson(response);
@@ -33,16 +33,16 @@ class _PaketSoalPageState extends State<PaketSoalPage> {
     print(response);
     if (response != null) {
       materi = Materi.fromJson(response);
-      final idMateri = materi!.data!.listCourseContent![0].courseId;
+      final idMateri = materi!.data!.listCourseContent![0].courseContentId;
       print('hasil id Materi');
       print(idMateri);
-      await getSubMateri(idMateri);
+      await getSubMateri(idMateri, id);
     }
   }
 
   SubMateri? subMateri;
 
-  getSubMateri(id) async {
+  getSubMateri(id, id2) async {
     final response =
         await LatihanSoalApi().getSubMateri(UserEmail.getUserEmail(), id);
     print(response);
@@ -51,7 +51,8 @@ class _PaketSoalPageState extends State<PaketSoalPage> {
       final idMateri = subMateri!.data![0].subCourseContentId;
       print('isi idMateri');
       print(subMateri);
-      await getPaketSoal(idMateri);
+      print(idMateri);
+      await getPaketSoal(idMateri, id2);
       setState(() {});
     }
   }

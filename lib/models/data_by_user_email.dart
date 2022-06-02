@@ -84,7 +84,7 @@ class Data {
     this.userPropSekolah = json["user_prop_sekolah"];
     this.userKabSekolah = json["user_kab_sekolah"];
     this.userAsalSekolah = json["user_asal_sekolah"];
-    this.kelas = json["kelas"];
+    this.kelas = json["kelas"] ?? "10";
     this.uniqcode = json["uniqcode"];
     this.referral = json["referral"];
     this.dateCreate = json["date_create"];

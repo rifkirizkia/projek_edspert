@@ -19,8 +19,6 @@ class _ProfilePageState extends State<ProfilePage> {
   getUserData() async {
     final data = await PreferenceHelper().getUserData();
     user = data;
-    print('ini kelasnya:');
-    print(user!.data!.kelas);
     setState(() {});
   }
 
@@ -165,19 +163,19 @@ class _ProfilePageState extends State<ProfilePage> {
                           const SizedBox(
                             height: 15,
                           ),
-                          Text(
-                            'Kelas',
-                            style: TextStyle(
-                                color: Colors.black.withAlpha(66),
-                                fontSize: 12),
-                          ),
-                          Text(
-                            user?.data?.kelas ?? "",
-                            style: const TextStyle(fontSize: 13),
-                          ),
-                          const SizedBox(
-                            height: 15,
-                          ),
+                          // Text(
+                          //   'Kelas',
+                          //   style: TextStyle(
+                          //       color: Colors.black.withAlpha(66),
+                          //       fontSize: 12),
+                          // ),
+                          // Text(
+                          //   user?.data?.kelas ?? "",
+                          //   style: const TextStyle(fontSize: 13),
+                          // ),
+                          // const SizedBox(
+                          //   height: 15,
+                          // ),
                           Text(
                             'Sekolah',
                             style: TextStyle(

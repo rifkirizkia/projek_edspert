@@ -196,45 +196,45 @@ class _EditProfileState extends State<EditProfile> {
                   ],
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.fromLTRB(20, 10, 20, 5),
-                child: Text('Kelas',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                        color: Color(0xff99A1AC))),
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.only(left: 20),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(
-                          color: const Color.fromARGB(255, 214, 214, 214),
-                          style: BorderStyle.solid,
-                          width: 1),
-                      borderRadius: BorderRadius.circular(8)),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                        value: selectedValue,
-                        items: kelas
-                            .map(
-                              (e) => DropdownMenuItem<String>(
-                                child: Text(e),
-                                value: e,
-                              ),
-                            )
-                            .toList(),
-                        onChanged: (String? val) {
-                          selectedValue = val!;
-                          setState(() {});
-                        }),
-                  ),
-                ),
-              ),
+              // const Padding(
+              //   padding: EdgeInsets.fromLTRB(20, 10, 20, 5),
+              //   child: Text('Kelas',
+              //       style: TextStyle(
+              //           fontWeight: FontWeight.w400,
+              //           fontSize: 14,
+              //           color: Color(0xff99A1AC))),
+              // ),
+              // Padding(
+              //   padding:
+              //       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              //   child: Container(
+              //     width: double.infinity,
+              //     padding: const EdgeInsets.only(left: 20),
+              //     decoration: BoxDecoration(
+              //         color: Colors.white,
+              //         border: Border.all(
+              //             color: const Color.fromARGB(255, 214, 214, 214),
+              //             style: BorderStyle.solid,
+              //             width: 1),
+              //         borderRadius: BorderRadius.circular(8)),
+              //     child: DropdownButtonHideUnderline(
+              //       child: DropdownButton<String>(
+              //           value: selectedValue,
+              //           items: kelas
+              //               .map(
+              //                 (e) => DropdownMenuItem<String>(
+              //                   child: Text(e),
+              //                   value: e,
+              //                 ),
+              //               )
+              //               .toList(),
+              //           onChanged: (String? val) {
+              //             selectedValue = val!;
+              //             setState(() {});
+              //           }),
+              //     ),
+              //   ),
+              // ),
               const Padding(
                 padding: EdgeInsets.fromLTRB(20, 10, 20, 5),
                 child: Text(
@@ -277,7 +277,7 @@ class _EditProfileState extends State<EditProfile> {
                         "email": emailController.text,
                         "nama_lengkap": fullNameController.text,
                         "nama_sekolah": schoolController.text,
-                        "kelas": selectedValue,
+                        "kelas": "10",
                         "gender": gender,
                         "foto": UserEmail.getUserPhotoUrl()
                       };
