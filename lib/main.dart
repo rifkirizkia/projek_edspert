@@ -32,6 +32,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (BuildContext context) => AuthProviderController(),
       child: MaterialApp(
+          title: 'Go UTBK',
           theme: ThemeData(
               appBarTheme: const AppBarTheme(
             backgroundColor: Color.fromARGB(255, 58, 127, 213),

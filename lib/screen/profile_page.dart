@@ -19,6 +19,8 @@ class _ProfilePageState extends State<ProfilePage> {
   getUserData() async {
     final data = await PreferenceHelper().getUserData();
     user = data;
+    print('ini kelasnya:');
+    print(user!.data!.kelas);
     setState(() {});
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:get/get.dart';
 import 'package:projek_edspert/helpers/user_email.dart';
 import 'package:projek_edspert/models/data_by_user_email.dart';
 import 'package:projek_edspert/models/network_response.dart';
@@ -66,10 +67,6 @@ class _EditProfileState extends State<EditProfile> {
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
-        // shape: const RoundedRectangleBorder(
-        //     borderRadius: BorderRadius.only(
-        //         bottomLeft: Radius.circular(15.0),
-        //         bottomRight: Radius.circular(15.0))),
         backgroundColor: Color(0xff3A7FD5),
         title: const Text(
           'Edit Akun',
@@ -293,9 +290,20 @@ class _EditProfileState extends State<EditProfile> {
                         if (registerResult.status == 1) {
                           await PreferenceHelper().setUserData(registerResult);
                           Navigator.pop(context, true);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              backgroundColor: Colors.green,
+                              behavior: SnackBarBehavior.floating,
+                              content: Text(
+                                "Data Berhasil Diubah",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
+                              backgroundColor: Colors.red,
                               content: Text(registerResult.message!),
                             ),
                           );

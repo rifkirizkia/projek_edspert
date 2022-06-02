@@ -61,8 +61,8 @@ class _PaketSoalPageState extends State<PaketSoalPage> {
     // TODO: implement initState
     super.initState();
     getMateri(widget.id);
-    getSubMateri(widget.id);
-    getPaketSoal(widget.id);
+    // getSubMateri(widget.id);
+    // getPaketSoal(widget.id);
   }
 
   @override

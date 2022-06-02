@@ -367,7 +367,6 @@ class MapelWidget extends StatelessWidget {
                         flex: int.parse(count),
                         child: Container(
                           height: 5,
-                          //width: MediaQuery.of(context).size.width * 0.4,
                           decoration: BoxDecoration(
                               color: const Color.fromARGB(255, 58, 127, 213),
                               borderRadius: BorderRadius.circular(10)),
@@ -376,11 +375,6 @@ class MapelWidget extends StatelessWidget {
                       Expanded(
                         flex: int.parse(total) - int.parse(count),
                         child: Container(
-                            // height: 5,
-                            // width: MediaQuery.of(context).size.width * 0.4,
-                            // decoration: BoxDecoration(
-                            //     color: const Color.fromARGB(255, 58, 127, 213),
-                            //     borderRadius: BorderRadius.circular(10)),
                             ),
                       ),
                     ],

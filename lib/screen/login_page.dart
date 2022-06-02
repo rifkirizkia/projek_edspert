@@ -49,7 +49,7 @@ class _LoginPageState extends State<LoginPage> {
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 50),
                 child: Text(
-                  'Selamat Datang di Aplikasi Widya Edu Aplikasi Latihan dan Konsultasi Soal',
+                  'Selamat Datang di Aplikasi Go UTBK Aplikasi Latihan dan Konsultasi Soal',
                   style: TextStyle(fontSize: 14, color: Colors.black),
                   textAlign: TextAlign.center,
                 ),
@@ -92,40 +92,51 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(
                 height: 20,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
-                child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      primary: Colors.black,
-                      fixedSize: const Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                    ),
-                    onPressed: () {},
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 20.0),
-                          child: Image.asset("assets/img/auth/ic_apple.png"),
-                        ),
-                        const Text(
-                          'Masuk dengan Apple',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 17),
-                        )
-                      ],
-                    )),
-              ),
+              //loginByApple(),
               const SizedBox(height: 40.0)
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class loginByApple extends StatelessWidget {
+  const loginByApple({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 40),
+      child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            elevation: 0,
+            primary: Colors.black,
+            fixedSize: const Size(double.infinity, 50),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(25),
+            ),
+          ),
+          onPressed: () {},
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 20.0),
+                child: Image.asset("assets/img/auth/ic_apple.png"),
+              ),
+              const Text(
+                'Masuk dengan Apple',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17),
+              )
+            ],
+          )),
     );
   }
 }

@@ -1,11 +1,16 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:projek_edspert/controller/HomeController.dart';
 
 class DiscussionPage extends StatefulWidget {
   const DiscussionPage({Key? key, this.id}) : super(key: key);
@@ -18,23 +23,35 @@ class _DiscussionPageState extends State<DiscussionPage> {
   final textController = TextEditingController();
   late CollectionReference chat;
   late QuerySnapshot chatData;
-  // List<QueryDocumentSnapshot>? listChat;
-  // getDataFromFirebase() async {
-  //   chatData = await FirebaseFirestore.instance
-  //       .collection("room")
-  //       .doc("kimia")
-  //       .collection("chat")
-  //       .get();
-  //   // listChat = chatData.docs;
-  //   setState(() {});
-  //   // print(chatData.docs);
+  bool emojiShowing = false;
+  final controller = HomeController();
+
+  _onEmojiSelected(Emoji emoji) {
+    textController
+      ..text += emoji.emoji
+      ..selection = TextSelection.fromPosition(
+          TextPosition(offset: textController.text.length));
+  }
+
+  _onBackspacePressed() {
+    textController
+      ..text = textController.text.characters.skipLast(1).toString()
+      ..selection = TextSelection.fromPosition(
+          TextPosition(offset: textController.text.length));
+  }
+  // FirebaseMessaging firebaseMessaging = new FirebaseMessaging();
+  // void fcmSubscribe() {
+  //   firebaseMessaging.subscribeToTopic("kimia");
   // }
+  // void fcmUnSubscribe() {
+  //   firebaseMessaging.unsubscribeFromTopic("kimia");
+  // }
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    // getDataFromFirebase();
   }
 
   @override
@@ -147,9 +164,15 @@ class _DiscussionPageState extends State<DiscussionPage> {
             child: Row(
               children: [
                 IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      controller.focusNode.unfocus();
+                      controller.isEmojiVisible.toggle();
+                      setState(() {
+                        emojiShowing = !emojiShowing;
+                      });
+                    },
                     icon: const Icon(
-                      Icons.add,
+                      Icons.emoji_emotions,
                       color: Color(0xff3A7FD5),
                     )),
                 Expanded(
@@ -162,6 +185,7 @@ class _DiscussionPageState extends State<DiscussionPage> {
                             height: 40,
                             child: TextField(
                               controller: textController,
+                              focusNode: controller.focusNode,
                               decoration: InputDecoration(
                                   suffixIcon: IconButton(
                                       onPressed: () async {
@@ -228,7 +252,10 @@ class _DiscussionPageState extends State<DiscussionPage> {
                         return;
                       }
                       print(textController.text);
-
+                      //tambahan
+    //                   void fcmSubscribe() {
+    // firebaseMessaging.subscribeToTopic("kimia");
+  //}
                       final chatContent = {
                         "nama": user.displayName,
                         "uid": user.uid,
@@ -251,7 +278,44 @@ class _DiscussionPageState extends State<DiscussionPage> {
               ],
             ),
           ),
-        )
+        ),
+        Offstage(
+          offstage: !emojiShowing,
+          child: SizedBox(
+            height: 250,
+            child: EmojiPicker(
+                onEmojiSelected: (Category category, Emoji emoji) {
+                  _onEmojiSelected(emoji);
+                },
+                onBackspacePressed: _onBackspacePressed,
+                config: Config(
+                    backspaceColor: Colors.red.shade900,
+                    columns: 7,
+                    // Issue: https://github.com/flutter/flutter/issues/28894
+                    emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
+                    verticalSpacing: 0,
+                    horizontalSpacing: 0,
+                    initCategory: Category.RECENT,
+                    bgColor: const Color(0xFFF2F2F2),
+                    indicatorColor: Colors.blue,
+                    iconColor: Colors.grey,
+                    iconColorSelected: Colors.blue,
+                    progressIndicatorColor: Colors.blue,
+                    skinToneDialogBgColor: Colors.white,
+                    skinToneIndicatorColor: Colors.grey,
+                    enableSkinTones: true,
+                    showRecentsTab: true,
+                    recentsLimit: 28,
+                    noRecents: const Text(
+                      'No Recents',
+                      style: TextStyle(fontSize: 20, color: Colors.black26),
+                      textAlign: TextAlign.center,
+                    ),
+                    tabIndicatorAnimDuration: kTabScrollDuration,
+                    categoryIcons: const CategoryIcons(),
+                    buttonMode: ButtonMode.MATERIAL)),
+          ),
+        ),
       ])),
     );
   }

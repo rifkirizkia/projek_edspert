@@ -65,7 +65,7 @@ class _KerjakanLatihanSoalPageState extends State<KerjakanLatihanSoalPage>
                   ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           primary: const Color(0xff3A7FD5),
-                          fixedSize: const Size(135, 33),
+                          fixedSize: const Size(160, 45),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10))),
                       onPressed: () async {
@@ -146,13 +146,27 @@ class _KerjakanLatihanSoalPageState extends State<KerjakanLatihanSoalPage>
               ? const Center(child: CircularProgressIndicator())
               : Column(
                   children: [
-                    TabBar(
-                      controller: _controller,
-                      tabs: List.generate(
-                        soal!.data!.length,
-                        (index) => Text(
-                          "${index + 1}",
-                          style: const TextStyle(color: Colors.black),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: TabBar(
+                        controller: _controller,
+                        isScrollable: true,
+                        indicator: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          border: Border.all(
+                            color: Colors.blue,
+                            width: 3,
+                          ),
+                        ),
+                        tabs: List.generate(
+                          soal!.data!.length,
+                          (index) => Container(
+                            padding: const EdgeInsets.symmetric(vertical: 10.0),
+                            child: Text(
+                              "${index + 1}",
+                              style: const TextStyle(color: Colors.blue),
+                            ),
+                          ),
                         ),
                       ),
                     ),
