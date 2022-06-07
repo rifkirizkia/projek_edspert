@@ -81,6 +81,9 @@ class _ProfilePageState extends State<ProfilePage> {
                             children: [
                               Text(
                                 user!.data!.userName!,
+                                maxLines: 1,
+                                softWrap: false,
+                                overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w400,
@@ -132,6 +135,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           Text(
                             user!.data!.userName!,
+                            maxLines: 1,
+                            softWrap: false,
+                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(fontSize: 13),
                           ),
                           const SizedBox(
@@ -163,19 +169,19 @@ class _ProfilePageState extends State<ProfilePage> {
                           const SizedBox(
                             height: 15,
                           ),
-                          // Text(
-                          //   'Kelas',
-                          //   style: TextStyle(
-                          //       color: Colors.black.withAlpha(66),
-                          //       fontSize: 12),
-                          // ),
-                          // Text(
-                          //   user?.data?.kelas ?? "",
-                          //   style: const TextStyle(fontSize: 13),
-                          // ),
-                          // const SizedBox(
-                          //   height: 15,
-                          // ),
+                          Text(
+                            'Kelas',
+                            style: TextStyle(
+                                color: Colors.black.withAlpha(66),
+                                fontSize: 12),
+                          ),
+                          Text(
+                            user?.data?.kelas ?? "",
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
                           Text(
                             'Sekolah',
                             style: TextStyle(

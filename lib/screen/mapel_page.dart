@@ -23,6 +23,14 @@ class MapelPage extends StatelessWidget {
           itemCount: mapel.data!.length,
           itemBuilder: ((context, index) {
             final currentMapel = mapel.data![index];
+            print("");
+            print("");
+            print("");
+            print("hasil jumlah selesai");
+            print(currentMapel);
+            print("");
+            print("");
+            print("");
             return GestureDetector(
                 onTap: () {
                   Navigator.of(context).push(

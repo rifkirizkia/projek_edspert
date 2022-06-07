@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:awesome_widgets/awesome_widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
@@ -14,6 +15,8 @@ import 'package:intl/intl.dart';
 import 'package:projek_edspert/controller/HomeController.dart';
 
 import '../constant/api_url.dart';
+import '../helpers/preference_helper.dart';
+import '../models/data_by_user_email.dart';
 import '../models/network_response.dart';
 
 class DiscussionPage extends StatefulWidget {
@@ -63,43 +66,48 @@ class _DiscussionPageState extends State<DiscussionPage> {
   }
 
   Future<NetworkResponse> _postNotif({path, body, onSendProgress}) async {
-    // try {
-    final dio = pushNotifDio();
+    try {
+      final dio = pushNotifDio();
 
-    final res = await dio.post(
-      path,
-      data: body,
-      onSendProgress: onSendProgress,
-    );
-
-    return NetworkResponse.success(res.data);
-    // } catch (e) {
-    //   print('e.toString()');
-    //   print(e.toString());
-    //   Get.snackbar(
-    //     "Terjadi Kesalahan",
-    //     "Silahkan ulangi beberapa saat lagi",
-    //     snackPosition: SnackPosition.BOTTOM,
-    //     colorText: Colors.white,
-    //     backgroundColor: Colors.black,
-    //     dismissDirection: DismissDirection.horizontal,
-    //   );
-    //   return NetworkResponse.error();
-    // // }
+      final res = await dio.post(
+        path,
+        data: body,
+        onSendProgress: onSendProgress,
+      );
+      return NetworkResponse.success(res.data);
+    } catch (e) {
+      print('e.toString()');
+      print(e.toString());
+      Get.snackbar(
+        "Terjadi Kesalahan",
+        "Silahkan ulangi beberapa saat lagi",
+        snackPosition: SnackPosition.BOTTOM,
+        colorText: Colors.white,
+        backgroundColor: Colors.black,
+        dismissDirection: DismissDirection.horizontal,
+      );
+      return NetworkResponse.error();
+    }
   }
 
   Future<NetworkResponse> postNotif(
     title,
+    url,
     message,
   ) async {
-    Map<String, dynamic> data = {};
+    Map<String, dynamic> data = {
+      "click_action": "FLUTTER_NOTIFICATION_CLICK",
+      "sound": "default",
+      "status": "done",
+      "screen": "discussion_page",
+    };
 
     final res = await _postNotif(path: ApiUrl.pushNotif, body: {
-      "topics": "/kimia",
+      "to": "/topics/kimia",
       "notification": {
-        "body": message,
+        "body": message ?? "Foto",
         "title": title,
-        "image": "",
+        "image": url ?? "",
         "text": "",
         "content_available": 1
       },
@@ -113,6 +121,7 @@ class _DiscussionPageState extends State<DiscussionPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    FirebaseMessaging.instance.subscribeToTopic("kimia");
   }
 
   @override
@@ -160,44 +169,162 @@ class _DiscussionPageState extends State<DiscussionPage> {
                                       fontSize: 10,
                                       fontWeight: FontWeight.w400,
                                       color: Color(0xff5200FF))),
-                              Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 6.0, vertical: 10.0),
-                                  decoration: BoxDecoration(
-                                      color: user.uid == currentChat["uid"]
-                                          ? const Color(0xff3A7FD5)
-                                          : const Color(0xffFFDCDC),
-                                      borderRadius: user.uid ==
-                                              currentChat["uid"]
-                                          ? const BorderRadius.only(
-                                              bottomLeft: Radius.circular(10),
-                                              topLeft: Radius.circular(10),
-                                              topRight: Radius.circular(10),
-                                            )
-                                          : const BorderRadius.only(
-                                              bottomLeft: Radius.circular(10),
-                                              bottomRight: Radius.circular(10),
-                                              topRight: Radius.circular(10),
-                                            )),
-                                  child: currentChat["type"] == "file"
-                                      ? Image.network(
-                                          currentChat["file_url"],
-                                          errorBuilder:
-                                              ((context, error, stackTrace) {
+                              GestureDetector(
+                                onLongPress: () {
+                                  user.uid == currentChat["uid"]
+                                      ? showModalBottomSheet(
+                                          context: context,
+                                          builder: (BuildContext context) {
                                             return Container(
-                                              padding: EdgeInsets.all(10),
-                                              child: Icon(Icons.warning),
+                                              child: Wrap(
+                                                children: [
+                                                  ListTile(
+                                                    leading: const Icon(
+                                                      Icons.delete,
+                                                      color: Colors.red,
+                                                    ),
+                                                    title: const Text(
+                                                        'Hapus Pesan Anda'),
+                                                    onTap: () {
+                                                      showDialog(
+                                                        context: context,
+                                                        barrierDismissible:
+                                                            false,
+                                                        builder: (BuildContext
+                                                            context) {
+                                                          return AlertDialog(
+                                                            title: const Text(
+                                                                "Pesan ini akan dihapus"),
+                                                            content: const Text(
+                                                                "Apakah anda yakin pesan ini akan dihapus?"),
+                                                            actions: <Widget>[
+                                                              TextButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                  },
+                                                                  child: const Text(
+                                                                      "Batal")),
+                                                              TextButton(
+                                                                child:
+                                                                    const Text(
+                                                                        "Ya"),
+                                                                onPressed: () {
+                                                                  FirebaseFirestore
+                                                                      .instance
+                                                                      .collection(
+                                                                          "room")
+                                                                      .doc(
+                                                                          "kimia")
+                                                                      .collection(
+                                                                          "chat")
+                                                                      .doc(snapshot
+                                                                          .data!
+                                                                          .docs
+                                                                          .reversed
+                                                                          .toList()[
+                                                                              index]
+                                                                          .reference
+                                                                          .id)
+                                                                      .delete()
+                                                                      //     .catchError(
+                                                                      //         (err) {
+                                                                      //   print(
+                                                                      //       "Error: $err");
+                                                                      // })
+                                                                      .whenComplete(
+                                                                          () {
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                    AwesomeSnackbar.style1(
+                                                                        duration: const Duration(
+                                                                            seconds:
+                                                                                3),
+                                                                        context:
+                                                                            context,
+                                                                        primaryColor: Colors
+                                                                            .green
+                                                                            .shade300,
+                                                                        title:
+                                                                            "Berhasil",
+                                                                        subTitle:
+                                                                            "Pesan Anda Telah Dihapus",
+                                                                        titleTextstyle: const TextStyle(
+                                                                            color: Colors
+                                                                                .green),
+                                                                        subtitleTextstyle: const TextStyle(
+                                                                            color: Colors
+                                                                                .green,
+                                                                            fontSize:
+                                                                                13),
+                                                                        backgroundColor:
+                                                                            Colors
+                                                                                .white,
+                                                                        iconData:
+                                                                            Icons
+                                                                                .check,
+                                                                        iconColor:
+                                                                            Colors.white);
+                                                                  });
+                                                                },
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },
+                                                      );
+                                                    },
+                                                  )
+                                                ],
+                                              ),
                                             );
-                                          }),
-                                        )
-                                      : Text(currentChat["content"],
-                                          style: TextStyle(
-                                              fontSize: 13,
-                                              color:
-                                                  user.uid == currentChat["uid"]
-                                                      ? Colors.white
-                                                      : Colors.black,
-                                              fontWeight: FontWeight.w400))),
+                                          })
+                                      : null;
+                                },
+                                child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 6.0, vertical: 10.0),
+                                    decoration: BoxDecoration(
+                                        color: user.uid == currentChat["uid"]
+                                            ? const Color(0xff3A7FD5)
+                                            : const Color(0xffFFDCDC),
+                                        borderRadius: user.uid ==
+                                                currentChat["uid"]
+                                            ? const BorderRadius.only(
+                                                bottomLeft: Radius.circular(10),
+                                                topLeft: Radius.circular(10),
+                                                topRight: Radius.circular(10),
+                                              )
+                                            : const BorderRadius.only(
+                                                bottomLeft: Radius.circular(10),
+                                                bottomRight:
+                                                    Radius.circular(10),
+                                                topRight: Radius.circular(10),
+                                              )),
+                                    child: currentChat["type"] == "file"
+                                        ? Image.network(
+                                            currentChat["file_url"],
+                                            errorBuilder:
+                                                ((context, error, stackTrace) {
+                                              return Container(
+                                                padding: EdgeInsets.all(10),
+                                                child: Icon(Icons.warning),
+                                              );
+                                            }),
+                                          )
+                                        : Text(currentChat["content"],
+                                            style: TextStyle(
+                                                fontSize: 13,
+                                                color: user.uid ==
+                                                        currentChat["uid"]
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                                fontWeight: FontWeight.w400))),
+                              ),
                               Text(
                                   currentDate == null
                                       ? ""
@@ -290,6 +417,11 @@ class _DiscussionPageState extends State<DiscussionPage> {
                                           chat
                                               .add(chatContent)
                                               .whenComplete(() {
+                                            final res = postNotif(
+                                              user.displayName,
+                                              url,
+                                              "Foto",
+                                            );
                                             textController.clear();
                                           });
                                         }
@@ -335,8 +467,10 @@ class _DiscussionPageState extends State<DiscussionPage> {
                       };
                       final res = postNotif(
                         user.displayName,
+                        "",
                         textController.text,
                       );
+                      print("isi pesan");
                       print(res);
                       chat.add(chatContent).whenComplete(() {
                         textController.clear();

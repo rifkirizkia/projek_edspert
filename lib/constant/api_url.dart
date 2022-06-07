@@ -3,7 +3,7 @@ class ApiUrl {
   static String users = "users";
   static String userRegister = "users/registrasi";
   static String userUpdateProfile = "users/update";
-  static String pushNotif = "https://fcm.googleapis.com/fcm/send";
+  static String pushNotif = "send";
 
   static String latihanMataPelajaran = "exercise/data_course";
   static String latihanMateri = "exercise/data_course_content";

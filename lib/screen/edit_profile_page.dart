@@ -1,5 +1,5 @@
+import 'package:awesome_widgets/awesome_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:get/get.dart';
 import 'package:projek_edspert/helpers/user_email.dart';
 import 'package:projek_edspert/models/data_by_user_email.dart';
@@ -47,6 +47,7 @@ class _EditProfileState extends State<EditProfile> {
     final dataUser = await PreferenceHelper().getUserData();
     fullNameController.text = dataUser!.data!.userName!;
     schoolController.text = dataUser.data!.userAsalSekolah!;
+    selectedValue = dataUser.data!.kelas;
     gender = dataUser.data!.userGender!;
     print(dataUser.data!.userGender!);
     setState(() {});
@@ -196,45 +197,45 @@ class _EditProfileState extends State<EditProfile> {
                   ],
                 ),
               ),
-              // const Padding(
-              //   padding: EdgeInsets.fromLTRB(20, 10, 20, 5),
-              //   child: Text('Kelas',
-              //       style: TextStyle(
-              //           fontWeight: FontWeight.w400,
-              //           fontSize: 14,
-              //           color: Color(0xff99A1AC))),
-              // ),
-              // Padding(
-              //   padding:
-              //       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              //   child: Container(
-              //     width: double.infinity,
-              //     padding: const EdgeInsets.only(left: 20),
-              //     decoration: BoxDecoration(
-              //         color: Colors.white,
-              //         border: Border.all(
-              //             color: const Color.fromARGB(255, 214, 214, 214),
-              //             style: BorderStyle.solid,
-              //             width: 1),
-              //         borderRadius: BorderRadius.circular(8)),
-              //     child: DropdownButtonHideUnderline(
-              //       child: DropdownButton<String>(
-              //           value: selectedValue,
-              //           items: kelas
-              //               .map(
-              //                 (e) => DropdownMenuItem<String>(
-              //                   child: Text(e),
-              //                   value: e,
-              //                 ),
-              //               )
-              //               .toList(),
-              //           onChanged: (String? val) {
-              //             selectedValue = val!;
-              //             setState(() {});
-              //           }),
-              //     ),
-              //   ),
-              // ),
+              const Padding(
+                padding: EdgeInsets.fromLTRB(20, 10, 20, 5),
+                child: Text('Kelas',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 14,
+                        color: Color(0xff99A1AC))),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.only(left: 20),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                          color: const Color.fromARGB(255, 214, 214, 214),
+                          style: BorderStyle.solid,
+                          width: 1),
+                      borderRadius: BorderRadius.circular(8)),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                        value: selectedValue,
+                        items: kelas
+                            .map(
+                              (e) => DropdownMenuItem<String>(
+                                child: Text(e),
+                                value: e,
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (String? val) {
+                          selectedValue = val!;
+                          setState(() {});
+                        }),
+                  ),
+                ),
+              ),
               const Padding(
                 padding: EdgeInsets.fromLTRB(20, 10, 20, 5),
                 child: Text(
@@ -277,7 +278,7 @@ class _EditProfileState extends State<EditProfile> {
                         "email": emailController.text,
                         "nama_lengkap": fullNameController.text,
                         "nama_sekolah": schoolController.text,
-                        "kelas": "10",
+                        "kelas": selectedValue,
                         "gender": gender,
                         "foto": UserEmail.getUserPhotoUrl()
                       };
@@ -290,23 +291,39 @@ class _EditProfileState extends State<EditProfile> {
                         if (registerResult.status == 1) {
                           await PreferenceHelper().setUserData(registerResult);
                           Navigator.pop(context, true);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              backgroundColor: Colors.green,
-                              behavior: SnackBarBehavior.floating,
-                              content: Text(
-                                "Data Berhasil Diubah",
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                          );
+                          AwesomeSnackbar.style1(
+                              duration: const Duration(seconds: 3),
+                              context: context,
+                              primaryColor: Colors.green.shade300,
+                              title: "Berhasil",
+                              subTitle: "Data Berhasil Diubah",
+                              titleTextstyle:
+                                  const TextStyle(color: Colors.green),
+                              subtitleTextstyle: const TextStyle(
+                                  color: Colors.green, fontSize: 13),
+                              backgroundColor: Colors.white,
+                              iconData: Icons.check,
+                              iconColor: Colors.white);
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              backgroundColor: Colors.red,
-                              content: Text(registerResult.message!),
-                            ),
-                          );
+                          AwesomeSnackbar.style1(
+                              duration: const Duration(seconds: 3),
+                              context: context,
+                              primaryColor: Colors.red,
+                              title: "Coba Ulangi",
+                              subTitle: registerResult.message!,
+                              titleTextstyle:
+                                  const TextStyle(color: Colors.red),
+                              subtitleTextstyle: const TextStyle(
+                                  color: Colors.red, fontSize: 13),
+                              backgroundColor: Colors.white,
+                              iconData: Icons.priority_high_rounded,
+                              iconColor: Colors.white);
+                          // ScaffoldMessenger.of(context).showSnackBar(
+                          //   SnackBar(
+                          //     backgroundColor: Colors.red,
+                          //     content: Text(registerResult.message!),
+                          //   ),
+                          // );
                         }
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(

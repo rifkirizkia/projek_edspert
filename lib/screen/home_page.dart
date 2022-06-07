@@ -50,6 +50,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 
+//membuat notifikasi
   setUpFcm() async {
     // Get any messages which caused the application to open from
     // a terminated state.
@@ -277,6 +278,9 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Text(
                   "Hai, " + (dataUser?.data?.userName ?? "Nama User"),
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.poppins()
                       .copyWith(fontSize: 12, fontWeight: FontWeight.w700),
                 ),
@@ -312,6 +316,27 @@ class MapelWidget extends StatelessWidget {
   final String title;
   final String count;
   final String total;
+  showIcon() {
+    if (title == "Fisika") {
+      return Image.asset("assets/img/ic_atom.png");
+    } else if (title == "Kimia") {
+      return Image.asset("assets/img/ic_kimia.png");
+    } else if (title == "Matematika Saintek") {
+      return Image.asset("assets/img/ic_matematika.png");
+    } else if (title == "PU") {
+      return Image.asset("assets/img/ic_PU.png");
+    } else if (title == "PK") {
+      return Image.asset("assets/img/ic_PK.png");
+    } else if (title == "PBM") {
+      return Image.asset("assets/img/ic_PBM.png");
+    } else if (title == "Bahasa Inggris") {
+      return Image.asset("assets/img/ic_inggris.png");
+    } else if (title == "Biologi") {
+      return Image.asset("assets/img/ic_dna.png");
+    } else if (title == "PPU") {
+      return Image.asset("assets/img/ic_PPU.png");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -328,7 +353,7 @@ class MapelWidget extends StatelessWidget {
           decoration: BoxDecoration(
               color: const Color(0xfff0f0f0),
               borderRadius: BorderRadius.circular(10)),
-          child: Image.asset("assets/img/ic_atom.png"),
+          child: showIcon(),
         ),
         const SizedBox(
           width: 6,
@@ -374,8 +399,7 @@ class MapelWidget extends StatelessWidget {
                       ),
                       Expanded(
                         flex: int.parse(total) - int.parse(count),
-                        child: Container(
-                            ),
+                        child: Container(),
                       ),
                     ],
                   ),

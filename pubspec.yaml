@@ -27,6 +27,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  awesome_widgets: ^0.0.6
   cloud_firestore: ^3.1.13
   cupertino_icons: ^1.0.2
   dio: ^4.0.6
