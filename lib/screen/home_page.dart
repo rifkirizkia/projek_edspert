@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:projek_edspert/helpers/preference_helper.dart';
 import 'package:projek_edspert/models/data_by_user_email.dart';
 import 'package:projek_edspert/models/matapelajaran_list.dart';
+import 'package:projek_edspert/screen/discussion_page.dart';
 import 'package:projek_edspert/screen/mapel_page.dart';
 import 'package:projek_edspert/screen/paket_soal.dart';
 
@@ -95,6 +96,31 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 
+  // Future<void> setupInteractedMessage() async {
+  //   // Get any messages which caused the application to open from
+  //   // a terminated state.
+  //   RemoteMessage? initialMessage =
+  //       await FirebaseMessaging.instance.getInitialMessage();
+
+  //   // If the message also contains a data property with a "type" of "chat",
+  //   // navigate to a chat screen
+  //   if (initialMessage != null) {
+  //     _handleMessage(initialMessage);
+  //   }
+
+  //   // Also handle any interaction when the app is in the background via a
+  //   // Stream listener
+  //   FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+  // }
+
+  // void _handleMessage(RemoteMessage message) {
+  //   if (message.data['screen'] == 'discussion_page') {
+  //     Navigator.of(context).push(
+  //       MaterialPageRoute(builder: (context) => const DiscussionPage()),
+  //     );
+  //   }
+  // }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -103,6 +129,44 @@ class _HomePageState extends State<HomePage> {
     getBanner();
     setUpFcm();
     getUserData();
+    FirebaseMessaging.instance.getInitialMessage().then(
+      (message) {
+        print("FirebaseMessaging.instance.getInitialMessage");
+        if (message != null) {
+          // var _routename = message.data['screen'];
+          // print("nama route");
+          // print(_routename);
+          // if (_routename == '/discussion_page') {
+          Navigator.of(context).pushNamed('/discussion_page');
+          // }
+        } else {
+          print("route null");
+        }
+      },
+    );
+    //ketika notifikasi di klik dalam keadaan on background
+    FirebaseMessaging.onMessageOpenedApp.listen(
+      (message) {
+        print("FirebaseMessaging.onMessageOpenedApp.listen");
+        if (message.notification != null) {
+          // var _routename = message.data['screen'];
+          // if (_routename == '/discussion_page') {
+          Navigator.of(context).pushNamed('/discussion_page');
+          // }
+        }
+      },
+    );
+    //ketika notifikasi di klik dalam keadaan on foreground
+    FirebaseMessaging.onMessage.listen(
+      (message) {
+        print("FirebaseMessaging.onMessage.listen");
+        if (message.notification != null) {
+          print(message.notification!.title);
+          print(message.notification!.body);
+          print("message.data11 ${message.data}");
+        }
+      },
+    );
   }
 
   @override

@@ -13,11 +13,13 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:projek_edspert/controller/HomeController.dart';
+import 'package:projek_edspert/helpers/user_email.dart';
 
 import '../constant/api_url.dart';
 import '../helpers/preference_helper.dart';
 import '../models/data_by_user_email.dart';
 import '../models/network_response.dart';
+
 
 class DiscussionPage extends StatefulWidget {
   const DiscussionPage({Key? key, this.id}) : super(key: key);
@@ -65,14 +67,13 @@ class _DiscussionPageState extends State<DiscussionPage> {
     return dio;
   }
 
-  Future<NetworkResponse> _postNotif({path, body, onSendProgress}) async {
+  Future<NetworkResponse> _postNotif({path, body}) async {
     try {
       final dio = pushNotifDio();
 
       final res = await dio.post(
         path,
         data: body,
-        onSendProgress: onSendProgress,
       );
       return NetworkResponse.success(res.data);
     } catch (e) {
@@ -97,9 +98,7 @@ class _DiscussionPageState extends State<DiscussionPage> {
   ) async {
     Map<String, dynamic> data = {
       "click_action": "FLUTTER_NOTIFICATION_CLICK",
-      "sound": "default",
-      "status": "done",
-      "screen": "discussion_page",
+      "screen": "screen",
     };
 
     final res = await _postNotif(path: ApiUrl.pushNotif, body: {
@@ -116,12 +115,13 @@ class _DiscussionPageState extends State<DiscussionPage> {
     });
     return res;
   }
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     FirebaseMessaging.instance.subscribeToTopic("kimia");
+    //ketika notifikasi di klik dalam keadaan on Terminated
+    
   }
 
   @override
@@ -417,7 +417,7 @@ class _DiscussionPageState extends State<DiscussionPage> {
                                           chat
                                               .add(chatContent)
                                               .whenComplete(() {
-                                            final res = postNotif(
+                                            postNotif(
                                               user.displayName,
                                               url,
                                               "Foto",

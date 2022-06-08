@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:projek_edspert/controller/AuthProviderController.dart';
 import 'package:projek_edspert/helpers/preference_helper.dart';
@@ -32,6 +33,44 @@ class _ProfilePageState extends State<ProfilePage> {
     super.initState();
     controller = Provider.of<AuthProviderController>(context, listen: false);
     getUserData();
+    FirebaseMessaging.instance.getInitialMessage().then(
+      (message) {
+        print("FirebaseMessaging.instance.getInitialMessage");
+        if (message != null) {
+          // var _routename = message.data['screen'];
+          // print("nama route");
+          // print(_routename);
+          // if (_routename == '/discussion_page') {
+          Navigator.of(context).pushNamed('/discussion_page');
+          // }
+        } else {
+          print("route null");
+        }
+      },
+    );
+    //ketika notifikasi di klik dalam keadaan on background
+    FirebaseMessaging.onMessageOpenedApp.listen(
+      (message) {
+        print("FirebaseMessaging.onMessageOpenedApp.listen");
+        if (message.notification != null) {
+          // var _routename = message.data['screen'];
+          // if (_routename == '/discussion_page') {
+          Navigator.of(context).pushNamed('/discussion_page');
+          // }
+        }
+      },
+    );
+    //ketika notifikasi di klik dalam keadaan on foreground
+    FirebaseMessaging.onMessage.listen(
+      (message) {
+        print("FirebaseMessaging.onMessage.listen");
+        if (message.notification != null) {
+          print(message.notification!.title);
+          print(message.notification!.body);
+          print("message.data11 ${message.data}");
+        }
+      },
+    );
   }
 
   @override

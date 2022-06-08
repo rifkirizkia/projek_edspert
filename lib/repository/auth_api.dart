@@ -80,4 +80,5 @@ class AuthApi {
         await _getRequest(endpoint: ApiUrl.users, param: {"email": email});
     return result;
   }
+  
 }
