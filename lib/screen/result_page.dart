@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:projek_edspert/models/result_response.dart';
 import 'package:projek_edspert/repository/latihan_soal_api.dart';
 
@@ -30,7 +31,7 @@ class _ResultPageState extends State<ResultPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xff3A7FD5),
+      backgroundColor: const Color(0xff3490dc),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -57,13 +58,21 @@ class _ResultPageState extends State<ResultPage> {
                   const SizedBox(
                     height: 50,
                   ),
-                  const Text(
-                    'Selamat',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w400),
-                  ),
+                  int.parse(resultData!.data!.result!.jumlahScore!) <= 50
+                      ? Text(
+                          'Tetap Semangat',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w400),
+                        )
+                      : Text(
+                          'Selamat',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w400),
+                        ),
                   const Text('Kamu telah menyelesaikan Kuiz ini',
                       style: TextStyle(
                           color: Colors.white,
@@ -72,10 +81,13 @@ class _ResultPageState extends State<ResultPage> {
                   const SizedBox(
                     height: 34,
                   ),
-                  Image.asset(
-                    "assets/img/img_result.png",
-                    width: MediaQuery.of(context).size.width * 0.5,
-                  ),
+                  int.parse(resultData!.data!.result!.jumlahScore!) <= 50
+                      ? Lottie.asset('assets/img/95758-fire.json')
+                      : Lottie.asset('assets/img/107653-trophy.json'),
+                  // Image.asset(
+                  //   "assets/img/img_result.png",
+                  //   width: MediaQuery.of(context).size.width * 0.5,
+                  // ),
                   const SizedBox(
                     height: 25,
                   ),

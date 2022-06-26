@@ -9,21 +9,23 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:projek_edspert/controller/HomeController.dart';
 import 'package:projek_edspert/helpers/user_email.dart';
+import 'package:swipe_to/swipe_to.dart';
 
 import '../constant/api_url.dart';
 import '../helpers/preference_helper.dart';
 import '../models/data_by_user_email.dart';
 import '../models/network_response.dart';
 
-
 class DiscussionPage extends StatefulWidget {
   const DiscussionPage({Key? key, this.id}) : super(key: key);
   final String? id;
+  // final ValueChanged<Message> onSwipedMessage;
   @override
   State<DiscussionPage> createState() => _DiscussionPageState();
 }
@@ -34,6 +36,13 @@ class _DiscussionPageState extends State<DiscussionPage> {
   late QuerySnapshot chatData;
   bool emojiShowing = false;
   final controller = HomeController();
+  //tambahan
+  String nameUser = "nama";
+  String contentChat = "text";
+
+  bool leftSelected = false;
+  bool rightSelected = false;
+  bool replyCek = false;
 
   _onEmojiSelected(Emoji emoji) {
     textController
@@ -48,6 +57,21 @@ class _DiscussionPageState extends State<DiscussionPage> {
       ..selection = TextSelection.fromPosition(
           TextPosition(offset: textController.text.length));
   }
+
+  // void replyToMessage(DataUserByEmail message) {
+  //   setState(() {
+  //     replyMessage = message;
+  //   });
+  // }
+
+  // void cancelReply() {
+  //   setState(() {});
+  //   replyMessage = null;
+  // }
+
+  // onSwipedMessage(message) {
+  //   replyToMessage(message);
+  // }
 
   Dio pushNotifDio() {
     String uri = "https://fcm.googleapis.com/fcm/";
@@ -115,13 +139,17 @@ class _DiscussionPageState extends State<DiscussionPage> {
     });
     return res;
   }
+
   @override
   void initState() {
     // TODO: implement initState
+    leftSelected = false;
+    rightSelected = false;
+    nameUser = "nama";
+    contentChat = "text";
     super.initState();
     FirebaseMessaging.instance.subscribeToTopic("kimia");
     //ketika notifikasi di klik dalam keadaan on Terminated
-    
   }
 
   @override
@@ -131,6 +159,8 @@ class _DiscussionPageState extends State<DiscussionPage> {
         .doc("kimia")
         .collection("chat");
     final user = FirebaseAuth.instance.currentUser!;
+    //final isReplying = replyMessage!.message;
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Diskusi Soal"),
@@ -148,6 +178,7 @@ class _DiscussionPageState extends State<DiscussionPage> {
                   if (!snapshot.hasData) {
                     return const Center(child: CircularProgressIndicator());
                   }
+
                   return ListView.builder(
                     reverse: true,
                     itemCount: snapshot.data!.docs.reversed.length,
@@ -156,7 +187,10 @@ class _DiscussionPageState extends State<DiscussionPage> {
                           snapshot.data!.docs.reversed.toList()[index];
                       final currentDate =
                           (currentChat["time"] as Timestamp?)?.toDate();
-                      return Container(
+                      return
+                          //  SwipeTo(
+                          //   child:
+                          Container(
                         margin: const EdgeInsets.only(bottom: 10),
                         width: MediaQuery.of(context).size.width * 0.8,
                         child: Column(
@@ -305,25 +339,33 @@ class _DiscussionPageState extends State<DiscussionPage> {
                                                     Radius.circular(10),
                                                 topRight: Radius.circular(10),
                                               )),
-                                    child: currentChat["type"] == "file"
-                                        ? Image.network(
-                                            currentChat["file_url"],
-                                            errorBuilder:
-                                                ((context, error, stackTrace) {
-                                              return Container(
-                                                padding: EdgeInsets.all(10),
-                                                child: Icon(Icons.warning),
-                                              );
-                                            }),
-                                          )
-                                        : Text(currentChat["content"],
-                                            style: TextStyle(
-                                                fontSize: 13,
-                                                color: user.uid ==
-                                                        currentChat["uid"]
-                                                    ? Colors.white
-                                                    : Colors.black,
-                                                fontWeight: FontWeight.w400))),
+                                    child: Column(
+                                      children: [
+                                        
+                                          currentChat["type"] == "file"
+                                              ? Image.network(
+                                                  currentChat["file_url"],
+                                                  errorBuilder: ((context,
+                                                      error, stackTrace) {
+                                                    return Container(
+                                                      padding:
+                                                          EdgeInsets.all(10),
+                                                      child:
+                                                          Icon(Icons.warning),
+                                                    );
+                                                  }),
+                                                )
+                                              : Text(currentChat["content"],
+                                                  style: TextStyle(
+                                                      fontSize: 13,
+                                                      color: user.uid ==
+                                                              currentChat["uid"]
+                                                          ? Colors.white
+                                                          : Colors.black,
+                                                      fontWeight:
+                                                          FontWeight.w400))
+                                      ],
+                                    )),
                               ),
                               Text(
                                   currentDate == null
@@ -336,152 +378,181 @@ class _DiscussionPageState extends State<DiscussionPage> {
                                       color: Color(0xff979797))),
                             ]),
                       );
+                      // onRightSwipe: () {
+                      //   setState(() {
+                      //     rightSelected = false;
+                      //     leftSelected = true;
+                      //     nameUser = currentChat["nama"];
+                      //     contentChat = currentChat["content"];
+                      //   });
+                      // },
+                      //);
                     },
                   );
                 },
               )),
         ),
         SafeArea(
-          child: Container(
-            decoration: BoxDecoration(color: Colors.white, boxShadow: [
-              BoxShadow(
-                  offset: const Offset(0, -1),
-                  blurRadius: 10,
-                  color: Colors.black.withOpacity(0.25))
-            ]),
-            child: Row(
-              children: [
-                IconButton(
-                    onPressed: () {
-                      controller.focusNode.unfocus();
-                      controller.isEmojiVisible.toggle();
-                      setState(() {
-                        emojiShowing = !emojiShowing;
-                      });
-                    },
-                    icon: const Icon(
-                      Icons.emoji_emotions,
-                      color: Color(0xff3A7FD5),
-                    )),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: SizedBox(
-                            height: 40,
-                            child: TextField(
-                              focusNode: controller.focusNode,
-                              controller: textController,
-                              onTap: () {
-                                setState(() {
-                                  emojiShowing = false;
-                                });
-                              },
-                              decoration: InputDecoration(
-                                  suffixIcon: IconButton(
-                                      onPressed: () async {
-                                        final imageResult = await ImagePicker()
-                                            .pickImage(
-                                                source: ImageSource.camera,
-                                                maxHeight: 300,
-                                                maxWidth: 300);
-
-                                        if (imageResult != null) {
-                                          File file = File(imageResult.path);
-                                          // final name =
-                                          //     imageResult.path.split("/");
-                                          String room = widget.id ?? "kimia";
-                                          String ref =
-                                              "chat/$room/${user.uid}/${imageResult.name}";
-
-                                          final imgResUpload =
-                                              await FirebaseStorage.instance
-                                                  .ref()
-                                                  .child(ref)
-                                                  .putFile(file);
-                                          final url = await imgResUpload.ref
-                                              .getDownloadURL();
-                                          final chatContent = {
-                                            "nama": user.displayName,
-                                            "uid": user.uid,
-                                            "content": textController.text,
-                                            "email": user.email,
-                                            "photo": user.photoURL,
-                                            "ref": ref,
-                                            "type": "file",
-                                            "file_url": url,
-                                            "time": FieldValue.serverTimestamp()
-                                          };
-                                          chat
-                                              .add(chatContent)
-                                              .whenComplete(() {
-                                            postNotif(
-                                              user.displayName,
-                                              url,
-                                              "Foto",
-                                            );
-                                            textController.clear();
-                                          });
-                                        }
-                                      },
-                                      icon: const Icon(
-                                        Icons.camera_alt,
-                                        color: Color(0xff3A7FD5),
-                                      )),
-                                  contentPadding:
-                                      const EdgeInsets.only(left: 10),
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10)),
-                                  hintText: "Tulis pesan disini...",
-                                  hintStyle: const TextStyle(
-                                      color: Color(0xff979797))),
-                            ),
-                          ),
-                        ),
-                      ],
+          child: Column(
+            children: [
+              leftSelected
+                  ? _replyWidget(nameUser, contentChat)
+                  : AnimatedContainer(
+                      duration: Duration(seconds: 1),
                     ),
-                  ),
+              Container(
+                decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                  BoxShadow(
+                      offset: const Offset(0, -1),
+                      blurRadius: 10,
+                      color: Colors.black.withOpacity(0.25))
+                ]),
+                child: Row(
+                  children: [
+                    IconButton(
+                        onPressed: () {
+                          controller.focusNode.unfocus();
+                          controller.isEmojiVisible.toggle();
+                          setState(() {
+                            emojiShowing = !emojiShowing;
+                          });
+                        },
+                        icon: const Icon(
+                          Icons.emoji_emotions,
+                          color: Color(0xff3A7FD5),
+                        )),
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: SizedBox(
+                                height: 40,
+                                child: TextField(
+                                  focusNode: controller.focusNode,
+                                  controller: textController,
+                                  onTap: () {
+                                    setState(() {
+                                      emojiShowing = false;
+                                    });
+                                  },
+                                  decoration: InputDecoration(
+                                      suffixIcon: IconButton(
+                                          onPressed: () async {
+                                            final imageResult =
+                                                await ImagePicker().pickImage(
+                                                    source: ImageSource.camera,
+                                                    maxHeight: 300,
+                                                    maxWidth: 300);
+                                            if (imageResult != null) {
+                                              File file =
+                                                  File(imageResult.path);
+                                              // final name =
+                                              //     imageResult.path.split("/");
+                                              String room =
+                                                  widget.id ?? "kimia";
+                                              String ref =
+                                                  "chat/$room/${user.uid}/${imageResult.name}";
+
+                                              final imgResUpload =
+                                                  await FirebaseStorage.instance
+                                                      .ref()
+                                                      .child(ref)
+                                                      .putFile(file);
+                                              final url = await imgResUpload.ref
+                                                  .getDownloadURL();
+                                              final chatContent = {
+                                                "nama": user.displayName,
+                                                "uid": user.uid,
+                                                "content": textController.text,
+                                                "email": user.email,
+                                                "photo": user.photoURL,
+                                                "ref": ref,
+                                                "type": "file",
+                                                "file_url": url,
+                                                "time":
+                                                    FieldValue.serverTimestamp()
+                                              };
+                                              chat
+                                                  .add(chatContent)
+                                                  .whenComplete(() {
+                                                postNotif(
+                                                  user.displayName,
+                                                  url,
+                                                  "Foto",
+                                                );
+                                                textController.clear();
+                                              });
+                                            }
+                                          },
+                                          icon: const Icon(
+                                            Icons.camera_alt,
+                                            color: Color(0xff3A7FD5),
+                                          )),
+                                      contentPadding:
+                                          const EdgeInsets.only(left: 10),
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      hintText: "Tulis pesan disini...",
+                                      hintStyle: const TextStyle(
+                                          color: Color(0xff979797))),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                        onPressed: () async {
+                          if (textController.text.isEmpty) {
+                            return;
+                          }
+                          print(textController.text);
+                          //tambahan
+                          //                   void fcmSubscribe() {
+                          // firebaseMessaging.subscribeToTopic("kimia");
+                          //}
+                          final chatContent = {
+                            "nama": user.displayName,
+                            "uid": user.uid,
+                            "content": textController.text,
+                            "email": user.email,
+                            "photo": user.photoURL,
+                            "ref": null,
+                            "type": "text",
+                            "file_url": null,
+                            "time": FieldValue.serverTimestamp()
+                          };
+                          final res = postNotif(
+                            user.displayName,
+                            "",
+                            textController.text,
+                          );
+                          print("isi pesan");
+                          print(res);
+                          chat.add(chatContent).whenComplete(() {
+                            textController.clear();
+                            replyCek = true;
+                          });
+
+                          setState(() {
+                            if (leftSelected == true) {
+                              rightSelected = true;
+                              leftSelected = false;
+                            }
+                          });
+                        },
+                        icon: const Icon(
+                          Icons.send,
+                          color: Color(0xff3A7FD5),
+                        )),
+                  ],
                 ),
-                IconButton(
-                    onPressed: () async {
-                      if (textController.text.isEmpty) {
-                        return;
-                      }
-                      print(textController.text);
-                      //tambahan
-                      //                   void fcmSubscribe() {
-                      // firebaseMessaging.subscribeToTopic("kimia");
-                      //}
-                      final chatContent = {
-                        "nama": user.displayName,
-                        "uid": user.uid,
-                        "content": textController.text,
-                        "email": user.email,
-                        "photo": user.photoURL,
-                        "ref": null,
-                        "type": "text",
-                        "file_url": null,
-                        "time": FieldValue.serverTimestamp()
-                      };
-                      final res = postNotif(
-                        user.displayName,
-                        "",
-                        textController.text,
-                      );
-                      print("isi pesan");
-                      print(res);
-                      chat.add(chatContent).whenComplete(() {
-                        textController.clear();
-                      });
-                    },
-                    icon: const Icon(
-                      Icons.send,
-                      color: Color(0xff3A7FD5),
-                    )),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
         Offstage(
@@ -524,4 +595,78 @@ class _DiscussionPageState extends State<DiscussionPage> {
       ])),
     );
   }
+
+  Widget _replyWidget(name, content) {
+    return AnimatedContainer(
+      alignment: Alignment.centerLeft,
+      duration: Duration(seconds: 1),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+        color: Colors.white,
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(5),
+        child: Stack(
+          children: [
+            Container(
+              alignment: Alignment.centerLeft,
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                border: Border(
+                  left: BorderSide(color: Color(0xff5200FF), width: 3),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(name,
+                      style: TextStyle(
+                          color: Color(0xff5200FF),
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500)),
+                  SizedBox(height: 3),
+                  Text(
+                    content,
+                    style: TextStyle(
+                      color: Colors.black54,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+                right: 10,
+                top: 10,
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      leftSelected = false;
+                      rightSelected = false;
+                    });
+                  },
+                  child: Icon(
+                    Icons.clear,
+                    color: Colors.black87,
+                    size: 18,
+                  ),
+                )),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Widget buildReply() => Container(
+  //       padding: EdgeInsets.all(8),
+  //       decoration: BoxDecoration(
+  //           color: Colors.grey.withOpacity(0.2),
+  //           borderRadius: BorderRadius.only(
+  //               topLeft: Radius.circular(15), topRight: Radius.circular(15))),
+  //       child: ReplyMessageWidget(
+  //         message: replyMessage!,
+  //         onCancelReply: onCancelReply,
+  //       ),
+  //     );
 }

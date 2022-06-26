@@ -26,7 +26,7 @@ class _MainPageState extends State<MainPage> {
           onPressed: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => DiscussionPage(),
+                builder: (context) => const DiscussionPage(),
               ),
             );
           }),

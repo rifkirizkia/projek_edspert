@@ -96,31 +96,6 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 
-  // Future<void> setupInteractedMessage() async {
-  //   // Get any messages which caused the application to open from
-  //   // a terminated state.
-  //   RemoteMessage? initialMessage =
-  //       await FirebaseMessaging.instance.getInitialMessage();
-
-  //   // If the message also contains a data property with a "type" of "chat",
-  //   // navigate to a chat screen
-  //   if (initialMessage != null) {
-  //     _handleMessage(initialMessage);
-  //   }
-
-  //   // Also handle any interaction when the app is in the background via a
-  //   // Stream listener
-  //   FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
-  // }
-
-  // void _handleMessage(RemoteMessage message) {
-  //   if (message.data['screen'] == 'discussion_page') {
-  //     Navigator.of(context).push(
-  //       MaterialPageRoute(builder: (context) => const DiscussionPage()),
-  //     );
-  //   }
-  // }
-
   @override
   void initState() {
     // TODO: implement initState
@@ -133,12 +108,7 @@ class _HomePageState extends State<HomePage> {
       (message) {
         print("FirebaseMessaging.instance.getInitialMessage");
         if (message != null) {
-          // var _routename = message.data['screen'];
-          // print("nama route");
-          // print(_routename);
-          // if (_routename == '/discussion_page') {
           Navigator.of(context).pushNamed('/discussion_page');
-          // }
         } else {
           print("route null");
         }
@@ -149,10 +119,7 @@ class _HomePageState extends State<HomePage> {
       (message) {
         print("FirebaseMessaging.onMessageOpenedApp.listen");
         if (message.notification != null) {
-          // var _routename = message.data['screen'];
-          // if (_routename == '/discussion_page') {
           Navigator.of(context).pushNamed('/discussion_page');
-          // }
         }
       },
     );
@@ -434,41 +401,48 @@ class MapelWidget extends StatelessWidget {
                 ),
               ),
               Text(
-                "$count/$total Paket latihan soal",
+                "Ada $total Paket latihan soal",
                 style: const TextStyle(
                     fontWeight: FontWeight.w500,
                     fontSize: 12,
                     color: Color(0xff8E8E8E)),
               ),
               const SizedBox(height: 5),
-              Stack(
-                children: [
-                  Container(
-                    height: 5,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                        color: const Color(0xfff0f0f0),
-                        borderRadius: BorderRadius.circular(10)),
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: int.parse(count),
-                        child: Container(
-                          height: 5,
-                          decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 58, 127, 213),
-                              borderRadius: BorderRadius.circular(10)),
-                        ),
-                      ),
-                      Expanded(
-                        flex: int.parse(total) - int.parse(count),
-                        child: Container(),
-                      ),
-                    ],
-                  ),
-                ],
-              )
+              Text(
+                "Yuk kerjakan latihannya!",
+                style: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 12,
+                    color: Color.fromARGB(255, 58, 127, 213)),
+              ),
+              // Stack(
+              //   children: [
+              //     Container(
+              //       height: 5,
+              //       width: double.infinity,
+              //       decoration: BoxDecoration(
+              //           color: const Color(0xfff0f0f0),
+              //           borderRadius: BorderRadius.circular(10)),
+              //     ),
+              //     Row(
+              //       children: [
+              //         Expanded(
+              //           flex: int.parse(count),
+              //           child: Container(
+              //             height: 5,
+              //             decoration: BoxDecoration(
+              //                 color: const Color.fromARGB(255, 58, 127, 213),
+              //                 borderRadius: BorderRadius.circular(10)),
+              //           ),
+              //         ),
+              //         Expanded(
+              //           flex: int.parse(total) - int.parse(count),
+              //           child: Container(),
+              //         ),
+              //       ],
+              //     ),
+              //   ],
+              // )
             ],
           ),
         )
